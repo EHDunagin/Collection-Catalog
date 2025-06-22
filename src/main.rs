@@ -1,8 +1,7 @@
 use chrono::NaiveDate;
-use collection_catalog::db::{add_item, init_db, get_all_items};
+use collection_catalog::db::{add_item, init_db, get_all_items, soft_delete_item, get_item_by_id, update_item };
 use collection_catalog::models::{Item, ItemAction, ItemCategory};
 use rusqlite::Connection;
-use anyhow::Result;
 
 fn main() -> anyhow::Result<()> {
     let conn = Connection::open("catalog.db")?;
@@ -33,8 +32,26 @@ fn main() -> anyhow::Result<()> {
  
     let all_items = get_all_items(&conn)?;
     for item in all_items{
-        println!("ID {}: {} ({}), Action: {:?}", item.id, item.name, item.category, item.action);
+        println!("ID {}: {} ({}), Action: {:?} Deleted status: {}", item.id, item.name, item.category, item.action, item.deleted);
     }
 
+    soft_delete_item(&conn, 3)?;
+    println!("Item with id 3 has been soft deleted.");
+
+    if let Some(mut item) = get_item_by_id(&conn, 1)? {
+        item.name = "Updated Clock Name:".to_string();
+        item.last_updated = chrono::Local::now().naive_local().date();
+
+        update_item(&conn, &item)?;
+        println!("Item updated.");
+    } else {
+        println!("Item with ID 1 not found.");
+    }
+
+
+
+
     Ok(())
+
 }
+
