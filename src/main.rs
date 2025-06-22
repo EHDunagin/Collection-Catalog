@@ -10,7 +10,7 @@ fn main() -> anyhow::Result<()> {
 
     let sample_item = Item {
         id: 0, // SQLite will assign this
-        name: "Vintage Clock".to_string(),
+        name: "Vintage Clock a really long way too long name stop making it so long".to_string(),
         description: "An antique wall-mounted clock".to_string(),
         category: ItemCategory::Antique,
         action: ItemAction::Keep,
@@ -18,7 +18,7 @@ fn main() -> anyhow::Result<()> {
         last_updated: chrono::Local::now().naive_local().date(),
         age_years: Some(70),
         date_acquired: Some(NaiveDate::from_ymd_opt(1980, 5, 15).unwrap()),
-        purchase_price: Some(45.00),
+        purchase_price: Some(-45.00),
         estimated_value: Some(120.00),
         creator: Some("Unknown".to_string()),
         working: Some(true),
@@ -27,8 +27,10 @@ fn main() -> anyhow::Result<()> {
 
     };
 
-    add_item(&conn, &sample_item)?;
-    println!("Item added!");
+    match add_item(&conn, &sample_item) {
+        Ok(()) => println!("Item added!"),
+        Err(e) => eprintln!("Failed to add item: {}", e),
+    }
  
     let all_items = get_all_items(&conn)?;
     for item in all_items{
@@ -42,8 +44,11 @@ fn main() -> anyhow::Result<()> {
         item.name = "Updated Clock Name:".to_string();
         item.last_updated = chrono::Local::now().naive_local().date();
 
-        update_item(&conn, &item)?;
-        println!("Item updated.");
+        match update_item(&conn, &item) {
+            Ok(()) => println!("Item updated."),
+            Err(e) => eprintln!("Update failed: {}", e),
+        }
+
     } else {
         println!("Item with ID 1 not found.");
     }

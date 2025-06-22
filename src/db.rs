@@ -2,6 +2,7 @@ use std::str::FromStr;
 use rusqlite::{params, Connection, Result};
 use crate::models::{Item, ItemAction, ItemCategory};
 use chrono::NaiveDate;
+use anyhow::{ Result, anyhow };
 
 pub fn init_db(conn: &Connection) -> Result<()> {
     conn.execute(
@@ -100,6 +101,9 @@ pub fn get_item_by_id(conn: &Connection, id: i32) -> Result<Option<Item>> {
 
 
 pub fn add_item(conn: &Connection, item: &Item) -> Result<()> {
+    item.validate()
+        .map_err(|errs| anyhow!("Validation failed: {}", errs.join("; ")))?;
+
     conn.execute(
         "INSERT INTO items (
             name,
@@ -134,10 +138,15 @@ pub fn add_item(conn: &Connection, item: &Item) -> Result<()> {
             item.deleted as i32,
         ],
     )?;
+
     Ok(())
 }
 
 pub fn update_item(conn: &Connection, item: &Item) -> Result<()> {
+
+    item.validate()
+        .map_err(|errs| anyhow!("Validation failed: {}", errs.join("; ")))?;
+
     conn.execute(
         "UPDATE items SET
             name = ?1,

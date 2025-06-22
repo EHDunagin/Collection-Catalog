@@ -105,6 +105,43 @@ pub struct Item {
     pub provenance: Option<String>,
 }
 
+impl Item {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        let mut errors = vec![];
+
+        // Required: name
+        if self.name.trim().is_empty() {
+            errors.push("Name cannot be empty.".to_string());
+        } else if self.name.len() > 50 {
+            errors.push("Name cannot be more than 50 characters.".to_string());
+        }
+
+        // Required: description
+        if self.description.trim().is_empty() {
+            errors.push("Description cannot be empty.".to_string());
+        }
+
+        // Optional: price & value must be non-negative
+        if let Some(price) = self.purchase_price {
+            if price < 0.0 {
+                errors.push("Purchase price cannot be negative.".to_string());
+            }
+        }
+
+        if let Some(value) = self.estimated_value {
+            if value < 0.0 {
+                errors.push("Estimated value cannot be negative.".to_string());
+            }
+        }
+
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
