@@ -1,6 +1,6 @@
 use std::str::FromStr;
-use rusqlite::{params, Connection, Result};
-use crate::models::{Item, ItemAction, ItemCategory};
+use rusqlite::{params, Connection, Result, ToSql };
+use crate::models::{Item, ItemAction, ItemCategory, ItemFilter};
 use chrono::NaiveDate;
 use anyhow::{ Result as AnyResult, anyhow };
 
@@ -97,6 +97,71 @@ pub fn get_item_by_id(conn: &Connection, id: i32) -> Result<Option<Item>> {
     } else {
         Ok(None)
     }
+}
+
+pub fn get_filtered_items(conn: &Connection, filter: ItemFilter) -> rusqlite::Result<Vec<Item>> {
+    let mut sql = String::from("SELECT * FROM items WHERE 1=1");
+    let mut param_values: Vec<(String, Box<dyn ToSql>)> = Vec::new();
+
+    // Helper macro to append filters
+    macro_rules! push_filter {
+        ($opt:expr, $field:expr, $op:expr) => {
+            if let Some(val) = $opt.clone() {
+                let name = format!(":{}", $field);
+                sql.push_str(&format!(" AND {} {} {}", $field, $op, &name));
+                param_values.push((name, Box::new(val)));
+            }
+        };
+    }
+
+    macro_rules! push_like {
+        ($opt:expr, $field:expr) => {
+            if let Some(val) = $opt.clone() {
+                let name = format!(":{}", $field);
+                sql.push_str(&format!(" AND {} LIKE {}", $field, &name));
+                param_values.push((name, Box::new(format!("%{}%", val))));
+            }
+        };
+    }
+
+    // LIKE filters
+    push_like!(filter.name_contains, "name");
+    push_like!(filter.description_contains, "description");
+    push_like!(filter.creator_contains, "creator");
+    push_like!(filter.provenance_contains, "provenance");
+
+    // Exact match filters (Enums and bools)
+    push_filter!(filter.category.map(|c| c.to_string()), "category", "=");
+    push_filter!(filter.action.map(|a| a.to_string()), "action", "=");
+    push_filter!(filter.working, "working", "=");
+    push_filter!(filter.deleted, "deleted", "=");
+
+    // Date range filters
+    push_filter!(filter.date_added_min.map(|d| d.to_string()), "date_added", ">=");
+    push_filter!(filter.date_added_max.map(|d| d.to_string()), "date_added", "<=");
+    push_filter!(filter.last_updated_min.map(|d| d.to_string()), "last_updated", ">=");
+    push_filter!(filter.last_updated_max.map(|d| d.to_string()), "last_updated", "<=");
+    push_filter!(filter.date_acquired_min.map(|d| d.to_string()), "date_acquired", ">=");
+    push_filter!(filter.date_acquired_max.map(|d| d.to_string()), "date_acquired", "<=");
+
+    // Numeric range filters
+    push_filter!(filter.age_years_min, "age_years", ">=");
+    push_filter!(filter.age_years_max, "age_years", "<=");
+    push_filter!(filter.purchase_price_min, "purchase_price", ">=");
+    push_filter!(filter.purchase_price_max, "purchase_price", "<=");
+    push_filter!(filter.estimated_value_min, "estimated_value", ">=");
+    push_filter!(filter.estimated_value_max, "estimated_value", "<=");
+
+    // Prepare named params: Vec<(&str, &dyn ToSql)>
+    let params: Vec<(&str, &dyn ToSql)> = param_values
+        .iter()
+        .map(|(k, v)| (k.as_str(), v.as_ref() as &dyn ToSql))
+        .collect();
+
+    let mut stmt = conn.prepare(&sql)?;
+    let rows = stmt.query_map(&params[..], Item::from_row)?;
+    let items = rows.collect::<Result<Vec<_>, _>>()?;
+    Ok(items)
 }
 
 

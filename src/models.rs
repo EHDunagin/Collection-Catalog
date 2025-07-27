@@ -1,8 +1,10 @@
 use chrono::NaiveDate;
 use std::fmt;
 use std::str::FromStr;
+use rusqlite::Row;
+use serde::Serialize;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub enum ItemAction {
     Keep,
     Sell,
@@ -29,7 +31,7 @@ impl FromStr for ItemAction{
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub enum ItemCategory {
     Antique,
     Book,
@@ -140,6 +142,61 @@ impl Item {
             Err(errors)
         }
     }
+
+    pub fn from_row(row: &Row) -> rusqlite::Result<Self> {
+        Ok(Item {
+            id: row.get("id")?,
+            name: row.get("name")?,
+            description: row.get("description")?,
+            category: ItemCategory::from_str(&row.get::<_, String>("category")?).unwrap_or(ItemCategory::Other),
+            action: ItemAction::from_str(&row.get::<_, String>("action")?).unwrap_or(ItemAction::Keep),
+            // Default dates don't matter because this should always exist 
+            date_added: NaiveDate::parse_from_str(&row.get::<_, String>("date_added")?, "%Y-%m-%d").unwrap_or(NaiveDate::from_ymd_opt(2000, 1, 1).unwrap()), 
+            last_updated: NaiveDate::parse_from_str(&row.get::<_, String>("date_added")?, "%Y-%m-%d").unwrap_or(NaiveDate::from_ymd_opt(2000, 1, 1).unwrap()), 
+            deleted: row.get("deleted")?,
+
+            // Optional fields
+            age_years: row.get("age_years")?,
+            date_acquired: row.get::<_, Option<String>>("date_acquired")?
+                .map(|s| NaiveDate::parse_from_str(&s, "%Y-%m-%d").unwrap()),
+            purchase_price: row.get("purchase_price")?,
+            estimated_value: row.get("estimated_value")?,
+            creator: row.get("creator")?,
+            working: row.get("working")?,
+            provenance: row.get("provenance")?,
+        })
+    }
+}
+
+#[derive(Debug, Default, Serialize)]
+pub struct ItemFilter {
+    // Partial string matches
+    pub name_contains: Option<String>,
+    pub description_contains: Option<String>,
+    pub creator_contains: Option<String>,
+    pub provenance_contains: Option<String>,
+
+    // Enums / Exact matches
+    pub category: Option<ItemCategory>,
+    pub action: Option<ItemAction>,
+    pub working: Option<bool>,
+    pub deleted: Option<bool>,
+
+    // Date filters
+    pub date_added_min: Option<NaiveDate>,
+    pub date_added_max: Option<NaiveDate>,
+    pub last_updated_min: Option<NaiveDate>,
+    pub last_updated_max: Option<NaiveDate>,
+    pub date_acquired_min: Option<NaiveDate>,
+    pub date_acquired_max: Option<NaiveDate>,
+
+    // Numeric filers
+    pub age_years_min: Option<u32>,
+    pub age_years_max: Option<u32>,
+    pub purchase_price_min: Option<f64>,
+    pub purchase_price_max: Option<f64>,
+    pub estimated_value_min: Option<f64>,
+    pub estimated_value_max: Option<f64>,
 }
 
 #[cfg(test)]

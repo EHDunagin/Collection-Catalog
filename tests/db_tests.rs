@@ -82,7 +82,19 @@ fn test_soft_delete() {
 
 }
 
+#[test]
+fn test_filter_by_category() {
+    let conn = Connection::open_in_memory().unwrap();
+    init_db(&conn).unwrap();
 
+    let mut item = make_item();
+    add_item(&conn, &item).unwrap();
 
+    let mut filter = ItemFilter::default();
+    filter.name = Some("lid".to_string());
 
+    let results = get_filtered_items(&conn, filter).unwrap();
+    assert_eq!(results.len(), 1);
+    assert_eq!(results[0].name, "Test Book");
 
+}
