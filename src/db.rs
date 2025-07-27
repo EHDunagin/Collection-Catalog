@@ -105,9 +105,9 @@ pub fn get_filtered_items(conn: &Connection, filter: ItemFilter) -> rusqlite::Re
 
     // Helper macro to append filters
     macro_rules! push_filter {
-        ($opt:expr, $field:expr, $op:expr) => {
+        ($opt:expr, $field:expr, $param:expr, $op:expr) => {
             if let Some(val) = $opt.clone() {
-                let name = format!(":{}", $field);
+                let name = format!(":{}", $param);
                 sql.push_str(&format!(" AND {} {} {}", $field, $op, &name));
                 param_values.push((name, Box::new(val)));
             }
@@ -131,26 +131,26 @@ pub fn get_filtered_items(conn: &Connection, filter: ItemFilter) -> rusqlite::Re
     push_like!(filter.provenance_contains, "provenance");
 
     // Exact match filters (Enums and bools)
-    push_filter!(filter.category.map(|c| c.to_string()), "category", "=");
-    push_filter!(filter.action.map(|a| a.to_string()), "action", "=");
-    push_filter!(filter.working, "working", "=");
-    push_filter!(filter.deleted, "deleted", "=");
+    push_filter!(filter.category.map(|c| c.to_string()), "category", "category", "=");
+    push_filter!(filter.action.map(|a| a.to_string()), "action", "action", "=");
+    push_filter!(filter.working, "working", "working", "=");
+    push_filter!(filter.deleted, "deleted", "deleted", "=");
 
     // Date range filters
-    push_filter!(filter.date_added_min.map(|d| d.to_string()), "date_added", ">=");
-    push_filter!(filter.date_added_max.map(|d| d.to_string()), "date_added", "<=");
-    push_filter!(filter.last_updated_min.map(|d| d.to_string()), "last_updated", ">=");
-    push_filter!(filter.last_updated_max.map(|d| d.to_string()), "last_updated", "<=");
-    push_filter!(filter.date_acquired_min.map(|d| d.to_string()), "date_acquired", ">=");
-    push_filter!(filter.date_acquired_max.map(|d| d.to_string()), "date_acquired", "<=");
+    push_filter!(filter.date_added_min.map(|d| d.to_string()), "date_added", "date_added_min", ">=");
+    push_filter!(filter.date_added_max.map(|d| d.to_string()), "date_added", "date_added_max", "<=");
+    push_filter!(filter.last_updated_min.map(|d| d.to_string()), "last_updated", "last_updated_min", ">=");
+    push_filter!(filter.last_updated_max.map(|d| d.to_string()), "last_updated", "last_updated_max", "<=");
+    push_filter!(filter.date_acquired_min.map(|d| d.to_string()), "date_acquired", "date_acquired_min", ">=");
+    push_filter!(filter.date_acquired_max.map(|d| d.to_string()), "date_acquired", "date_acquired_max", "<=");
 
     // Numeric range filters
-    push_filter!(filter.age_years_min, "age_years", ">=");
-    push_filter!(filter.age_years_max, "age_years", "<=");
-    push_filter!(filter.purchase_price_min, "purchase_price", ">=");
-    push_filter!(filter.purchase_price_max, "purchase_price", "<=");
-    push_filter!(filter.estimated_value_min, "estimated_value", ">=");
-    push_filter!(filter.estimated_value_max, "estimated_value", "<=");
+    push_filter!(filter.age_years_min, "age_years", "age_years_min", ">=");
+    push_filter!(filter.age_years_max, "age_years", "age_years_max", "<=");
+    push_filter!(filter.purchase_price_min, "purchase_price", "purchase_price_min", ">=");
+    push_filter!(filter.purchase_price_max, "purchase_price", "purchase_price_max", "<=");
+    push_filter!(filter.estimated_value_min, "estimated_value", "estimated_value_min", ">=");
+    push_filter!(filter.estimated_value_max, "estimated_value", "estimated_value_max", "<=");
 
     // Prepare named params: Vec<(&str, &dyn ToSql)>
     let params: Vec<(&str, &dyn ToSql)> = param_values

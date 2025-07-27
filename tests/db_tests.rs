@@ -83,18 +83,109 @@ fn test_soft_delete() {
 }
 
 #[test]
+fn test_filter_by_name_contains() {
+    let conn = Connection::open_in_memory().unwrap();
+    init_db(&conn).unwrap();
+
+    let item = make_item();
+    add_item(&conn, &item).unwrap();
+
+    let mut filter = ItemFilter::default();
+    filter.name_contains = Some("lid".to_string());
+
+    let results = get_filtered_items(&conn, filter).unwrap();
+    assert_eq!(results.len(), 1);
+    assert_eq!(results[0].name, "Valid Name");
+
+}
+
+#[test]
 fn test_filter_by_category() {
     let conn = Connection::open_in_memory().unwrap();
     init_db(&conn).unwrap();
 
-    let mut item = make_item();
+    let item = make_item();
     add_item(&conn, &item).unwrap();
 
     let mut filter = ItemFilter::default();
-    filter.name = Some("lid".to_string());
+    filter.category = Some(ItemCategory::Book);
 
     let results = get_filtered_items(&conn, filter).unwrap();
     assert_eq!(results.len(), 1);
-    assert_eq!(results[0].name, "Test Book");
+    assert_eq!(results[0].name, "Valid Name");
 
 }
+
+#[test]
+fn test_filter_by_date_added_min() {
+    let conn = Connection::open_in_memory().unwrap();
+    init_db(&conn).unwrap();
+
+    let item = make_item();
+    add_item(&conn, &item).unwrap();
+
+    let mut filter = ItemFilter::default();
+    filter.date_added_min = Some(NaiveDate::from_ymd_opt(2021, 1, 1).unwrap());
+
+    let results = get_filtered_items(&conn, filter).unwrap();
+    assert_eq!(results.len(), 1);
+}
+
+#[test]
+fn test_filter_by_date_added_min_not_in_range() {
+    let conn = Connection::open_in_memory().unwrap();
+    init_db(&conn).unwrap();
+
+    let item = make_item();
+    add_item(&conn, &item).unwrap();
+
+    let mut filter = ItemFilter::default();
+    filter.date_added_min = Some(NaiveDate::from_ymd_opt(2025, 1, 1).unwrap());
+
+    let results = get_filtered_items(&conn, filter).unwrap();
+    assert_eq!(results.len(), 0);
+}    
+
+#[test]
+fn test_filter_by_multiple_fields() {
+    let conn = Connection::open_in_memory().unwrap();
+    init_db(&conn).unwrap();
+
+    let item = make_item();
+    add_item(&conn, &item).unwrap();
+
+    let mut filter = ItemFilter::default();
+    filter.name_contains = Some("Valid".to_string());
+    filter.description_contains = Some("Nice".to_string());
+    filter.category = Some(ItemCategory::Book);
+    filter.date_added_min = Some(NaiveDate::from_ymd_opt(2020, 1, 1).unwrap());
+    filter.working = Some(true);
+    filter.purchase_price_min = Some(50.0);
+    filter.purchase_price_max = Some(150.0);
+
+    let results = get_filtered_items(&conn, filter).unwrap();
+    assert_eq!(results.len(), 1);
+}
+
+#[test]
+fn test_filter_by_multiple_fields_missing_one() {
+    let conn = Connection::open_in_memory().unwrap();
+    init_db(&conn).unwrap();
+
+    let item = make_item();
+    add_item(&conn, &item).unwrap();
+
+    let mut filter = ItemFilter::default();
+    filter.name_contains = Some("Valid".to_string());
+    filter.description_contains = Some("Nice".to_string());
+    filter.category = Some(ItemCategory::Book);
+    filter.date_added_min = Some(NaiveDate::from_ymd_opt(2020, 1, 1).unwrap());
+    // This one should exclude the item
+    filter.working = Some(false);
+    filter.purchase_price_min = Some(50.0);
+    filter.purchase_price_max = Some(150.0);
+
+    let results = get_filtered_items(&conn, filter).unwrap();
+    assert_eq!(results.len(), 0);
+}
+
