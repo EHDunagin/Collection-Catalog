@@ -4,9 +4,9 @@ use std::str::FromStr;
 use rusqlite::Row;
 use serde::Serialize;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Default, Clone, Serialize)]
 pub enum ItemAction {
-    Keep,
+    #[default] Keep,
     Sell,
 }
 
@@ -31,9 +31,9 @@ impl FromStr for ItemAction{
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Default, Clone, Serialize)]
 pub enum ItemCategory {
-    Antique,
+    #[default] Antique,
     Book,
     Decor,
     ElectronicDevice,
@@ -86,7 +86,7 @@ impl FromStr for ItemCategory{
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone, Serialize)]
 pub struct Item {
     pub id: i32,
     pub name: String,
