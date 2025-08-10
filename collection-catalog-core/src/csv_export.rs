@@ -1,8 +1,3 @@
-// use std::error::Error;
-// use std::fs::File;
-
-// use csv::Writer;
-// use serde::Serialize;
 use crate::models::Item;
 
 pub fn export_to_csv(items: &[Item], path: &str) -> Result<(), Box<dyn std::error::Error>> {

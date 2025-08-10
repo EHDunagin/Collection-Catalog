@@ -1,6 +1,7 @@
 use chrono::NaiveDate;
 use collection_catalog::db::{add_item, init_db, get_all_items, soft_delete_item, get_item_by_id, update_item, get_filtered_items };
 use collection_catalog::models::{Item, ItemAction, ItemCategory, ItemFilter };
+use collection_catalog::csv_export::export_to_csv;
 use rusqlite::Connection;
 
 fn main() -> anyhow::Result<()> {
@@ -69,6 +70,7 @@ fn main() -> anyhow::Result<()> {
         Ok(items) => {
             println!("Filtered items function ran successfully!");
             println!("{:?}", items);
+            export_to_csv(&items, "output.csv");
         },
         Err(e) => eprintln!("Filtering failed: {}", e),
     }
