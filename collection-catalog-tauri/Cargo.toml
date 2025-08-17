@@ -1,8 +1,9 @@
 [package]
-name = "collection_catalog-tauri"
+name = "collection-catalog-tauri"
 version = "0.1.0"
-edition = 2025"
+edition = 2021"
 
 [dependencies]
 collection-catalog-core = { path = "../collection-catalog-core" }
+tauri = "1"
 

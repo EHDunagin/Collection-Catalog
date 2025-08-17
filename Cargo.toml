@@ -1,7 +1,8 @@
 [workspace]
+resolver = "3"
 members = [
-	"collection_catalog-core",
-	"collection_catalog-cli",
-	"collection_catalog-tauri",
+	"collection-catalog-core",
+	"collection-catalog-cli",
+#	"collection-catalog-tauri",
 ]
 
