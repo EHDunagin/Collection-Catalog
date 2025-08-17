@@ -1,11 +1,17 @@
+use std::env;
+use std::str::FromStr;
+
 use collection_catalog_core::{
     init_db,
+    add_item,
+    Item,
+    ItemCategory, 
+    ItemAction,
     ItemFilter,
     get_filtered_items,
     export_to_csv
 };
 use rusqlite::Connection;
-use std::env;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Grab arguments (skip arg[0] which is the program name)
@@ -15,7 +21,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("Collection Catalog CLI");
         println!("Usage:");
         println!("  list            - List all items");
-        println!(" export <path>    - Export all items to CSV");
+        println!("  export <path>    - Export all items to CSV");
+        println!("  add <name> <description> <category> <action> - Add a new item");
         return Ok(());
     }
 
@@ -43,6 +50,50 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("Exported {} items to {}", items.len(), &args[1]);
         }
 
+        "add" => {
+            if args.len() < 5 {
+                eprintln!("Error: add requires <name> <description> <category> <action>");
+                return Ok(());
+            }
+            
+            let name = args[1].to_string();
+            let description = args[2].to_string();
+
+            let category = match ItemCategory::from_str(&args[3]) {
+                Ok(c) => c,
+                Err(_) => {
+                    eprintln!("Invalid category: {}", args[3]);
+                    return Ok(());
+                }
+            };
+
+            let action = match ItemAction::from_str(&args[4]) {
+                Ok(a) => a,
+                Err(_) => {
+                    eprintln!("Invalid action: {}", args[4]);
+                    return Ok(());
+                }
+            };
+
+            let today = chrono::Local::now().date_naive();
+
+            let item = Item {
+                id: 0, // DB will auto-assing
+                name: name,
+                description: description,
+                category: category,
+                action: action,
+                date_added: today,
+                last_updated: today,
+                deleted: false,
+
+                // Default remaining
+                ..Default::default()
+            };
+
+            add_item(&conn, &item)?;
+            println!("Added item: {}", item.name);
+        }
         _ => {
             eprintln!("unknown command: {}", args[0]);
         }

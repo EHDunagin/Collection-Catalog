@@ -75,6 +75,7 @@ dependencies = [
 name = "collection-catalog-cli"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "collection-catalog-core",
  "rusqlite",
 ]
