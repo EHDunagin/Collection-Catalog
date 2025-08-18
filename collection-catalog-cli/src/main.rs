@@ -1,13 +1,17 @@
 use std::env;
 use std::str::FromStr;
+use std::fs;
+use std::path::Path;
 
 use collection_catalog_core::{
     init_db,
     add_item,
+    soft_delete_item,
     Item,
     ItemCategory, 
     ItemAction,
     ItemFilter,
+    get_all_items,
     get_filtered_items,
     export_to_csv
 };
@@ -20,10 +24,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if args.is_empty() {
         println!("Collection Catalog CLI");
         println!("Usage:");
-        println!("  list            - List all items");
-        println!("  export <path>    - Export all items to CSV");
+        println!("  list                                         - List all items");
+        println!("  export <path>                                - Export all items to CSV");
         println!("  add <name> <description> <category> <action> - Add a new item");
+        println!("  delete <id>                                  - Export all items to CSV");
         return Ok(());
+    }
+
+    // Ensure data folder exists
+    let path = Path::new("data");
+    if !path.exists() {
+        fs::create_dir_all(path)?;
     }
 
     // Connect to the database (adjust the path to your actual DB)
@@ -34,7 +45,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "list" => {
             // Call a core function to list items
             println!("Listing items...");
-            let items = get_filtered_items(&conn, ItemFilter::default())?;
+            let items = get_all_items(&conn)?;
             for item in items {
                 println!("{:?}", item);
             }
@@ -44,9 +55,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 eprintln!("Error: export requires a file path argument");
                 return Ok(());
             }
-            let items = get_filtered_items(&conn, ItemFilter::default())?;
+            let items = get_all_items(&conn)?;
             export_to_csv(&items, &args[1])?;
-            // TODO fetch items from core and export them
+            // Fetch items from core and export them
             println!("Exported {} items to {}", items.len(), &args[1]);
         }
 
@@ -93,6 +104,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             add_item(&conn, &item)?;
             println!("Added item: {}", item.name);
+        }
+        "delete" => {
+            if args.len() < 2 {
+                eprintln!("Usage: delete <item_id>");
+                return Ok(());
+            }
+
+            let id_str = &args[1];
+            let item_id: i32 = match id_str.parse() {
+                Ok(id) => id,
+                Err(_) => {
+                    eprintln!("Error: item_id must be an integer, got '{}'", id_str);
+                    return Ok(());
+                }
+            };
+
+            println!("Deleting item with ID {}...", item_id);
+            soft_delete_item(&conn, item_id)?;
+            println!("Item {} marked as deleted.", item_id);
         }
         _ => {
             eprintln!("unknown command: {}", args[0]);
