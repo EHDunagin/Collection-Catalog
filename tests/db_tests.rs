@@ -189,3 +189,33 @@ fn test_filter_by_multiple_fields_missing_one() {
     assert_eq!(results.len(), 0);
 }
 
+#[test]
+fn test_update_item_fields() {
+    let conn = Connection::open_in_memory().unwrap();
+    init_db(&conn).unwrap();
+
+    let item = make_item();
+    let added_item = add_item(&conn, &item).unwrap();
+
+    // Prepare updates
+    let mut updates = HashMap::new();
+    updates.insert("name", "Updated Name".to_string());
+    updates.insert("description", "Updated Description".to_string());
+    updates.insert("category", "Book".to_string());
+    updates.insert("working", "false".to_string());
+
+    // Call function
+    update_item_fields(&conn, &added_item.id, updates).unwrap();
+
+    let updated = get_item_by_id(&conn, added_item.id).unwrap().unwrap();
+
+    // Check changes
+    assert_eq!(updated.name, "Updated Name");
+    assert_eq!(updated.description, "Updated Description");
+    assert_eq!(updated.category, ItemCategory::Book);
+    assert_eq!(updated.working, Some(false));
+
+    // Verify last_updated changed
+    assert_ne!(updated.last_updated, added_item.last_updated);
+}
+

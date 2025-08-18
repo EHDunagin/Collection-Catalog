@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use std::collections::HashMap;
 use rusqlite::{params, Connection, Result, ToSql };
 use crate::models::{Item, ItemAction, ItemCategory, ItemFilter};
 use chrono::NaiveDate;
@@ -265,3 +266,41 @@ pub fn soft_delete_item(conn: &Connection, item_id: i32) -> Result<()> {
     Ok(())
 }
 
+pub fn update_item_fields(
+    conn: &Connection,
+    id: i32,
+    updates: HashMap<&str, String>,
+) -> AnyResult<()> {
+    // Step 1: Fetch current item
+    let item_option = get_item_by_id(conn, id)?;
+    let mut item = item_option.unwrap();
+
+    // Step 2: Apply updates
+    for (field, value) in updates {
+        match field {
+            "name" => item.name = value,
+            "description" => item.description = value,
+            "category" => item.category = ItemCategory::from_str(&value)
+                .unwrap_or(ItemCategory::Other),
+            "action" => item.action = ItemAction::from_str(&value)
+                .unwrap_or(ItemAction::Keep),
+            "date_added" => item.date_added = NaiveDate::parse_from_str(&value, "%Y-%m-%d")?,
+            "last_updated" => item.last_updated = NaiveDate::parse_from_str(&value, "%Y-%m-%d")?,
+            "age_years" => item.age_years = Some(value.parse::<u32>()?),
+            "date_acquired" => item.date_acquired = Some(NaiveDate::parse_from_str(&value, "%Y-%m-%d")?),
+            "purchase_price" => item.purchase_price = Some(value.parse::<f64>()?),
+            "estimated_value" => item.estimated_value = Some(value.parse::<f64>()?),
+            "creator" => item.creator = Some(value),
+            "working" => item.working = Some(value.parse::<bool>()?),
+            "provenance" => item.provenance = Some(value),
+            "deleted" => item.deleted = value.parse::<bool>()?,
+            _ => return Err(anyhow!("Unknown field: {}", field)),
+        }
+    }
+
+    // Always bump last_updated to "now" when updating
+    item.last_updated = chrono::Utc::now().date_naive();
+
+    // Step 3: Call core update
+    update_item(&conn, &item)
+}
