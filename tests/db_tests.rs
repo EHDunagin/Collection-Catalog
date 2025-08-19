@@ -190,7 +190,7 @@ fn test_filter_by_multiple_fields_missing_one() {
 }
 
 #[test]
-fn test_update_item_fields() {
+fn test_update_item_fields_success() {
     let conn = Connection::open_in_memory().unwrap();
     init_db(&conn).unwrap();
 
@@ -218,4 +218,24 @@ fn test_update_item_fields() {
     // Verify last_updated changed
     assert_ne!(updated.last_updated, added_item.last_updated);
 }
+
+#[test]
+fn test_update_item_fields_invalid_field() {
+    let conn = Connection::open_in_memory().unwrap();
+    init_db(&conn).unwrap();
+
+    let item = make_item();
+    let added_item = add_item(&conn, &item).unwrap();
+
+    // Try an invalid update
+    let mut updated = HashMap::new();
+    updates.insert("not_a_field", "oops".to_string());
+
+    let result = update_item_fields(&conn, item.id, updates);
+
+    assert!(result.is_err());
+    let err_msg = format!("{}", result.unwrap_err());
+    assert!(err_msg.contains("Unknown field"));
+}
+
 

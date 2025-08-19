@@ -2,11 +2,13 @@ use std::env;
 use std::str::FromStr;
 use std::fs;
 use std::path::Path;
+use std::collections::HashMap;
 
 use collection_catalog_core::{
     init_db,
     add_item,
     soft_delete_item,
+    update_item_fields,
     Item,
     ItemCategory, 
     ItemAction,
@@ -124,10 +126,45 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             soft_delete_item(&conn, item_id)?;
             println!("Item {} marked as deleted.", item_id);
         }
-        _ => {
+         "update" => {
+            if args.len() < 3 {
+                    eprintln!("Usage: update <item_id> field=value [field=value ...]");
+                return Ok(());
+            }
+
+            // Parse item_id
+            let item_id: i32 = match args[1].parse() {
+                Ok(id) => id,
+                Err(_) => {
+                    eprintln!("Error: item_id must be an integer, got '{}'", args[1]);
+                    return Ok(());
+                }
+            };
+
+            // Collect updates into a HashMap<&str, String>
+            let mut updates = HashMap::new();
+            for update in &args[2..] {
+                if let Some((field, value)) = update.split_once('=') {
+                    updates.insert(field.trim(), value.trim().to_string());
+                } else {
+                    eprintln!("Invalid update format: {update}. Use field=value");
+                    return Ok(());
+                }
+            }
+
+            // Apply update
+            match update_item_fields(&conn, item_id, updates) {
+                Ok(_) => println!("Item {item_id} updated successfully."),
+                Err(e) => eprintln!("Failed to update item {item_id}: {e}"),
+            }
+
+    }     
+    _ => {
             eprintln!("unknown command: {}", args[0]);
         }
     }
+
+
     Ok(())
 
 }
