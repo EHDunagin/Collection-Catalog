@@ -26,11 +26,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if args.is_empty() {
         println!("Collection Catalog CLI");
         println!("Usage:");
-        println!("  list                                            - List all items");
-        println!("  export <path>                                   - Export all items to CSV");
+        println!("  list field=value [field=value...]               - List all items");
+        println!("  export <path> field=value [field=value...]      - Export all items to CSV");
         println!("  add <name> <description> <category> <action>    - Add a new item");
         println!("  delete <id>                                     - Export all items to CSV");
         println!("  update <item_id> field=value [field=value...]   - Update an existing item");
+        println!("  help                                            - Show help message");
         return Ok(());
     }
 
@@ -46,9 +47,46 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     match args[0].as_str() {
         "list" => {
-            // Call a core function to list items
-            println!("Listing items...");
-            let items = get_all_items(&conn)?;
+
+            let mut filter = ItemFilter::default();
+
+            // Parse optional filters: field=value
+            for arg in args.iter().skip(1) {
+                if let Some((field, value)) = arg.split_once('=') {
+                    match field {
+                        // Partial string match filters
+                        "name" => filter.name_contains = Some(value.to_string()),
+                        "description" => filter.description_contains = Some(value.to_string()),
+                        "creator" => filter.creator_contains = Some(value.to_string()),
+                        "provenance" => filter.provenance_contains = Some(value.to_string()),
+                        // Enums / Exact match filters
+                        "category" => filter.category = ItemCategory::from_str(value).ok(),
+                        "action" => filter.action = ItemAction::from_str(value).ok(),
+                        "working" => filter.working = value.parse::<bool>().ok(),
+                        "deleted" => filter.deleted = value.parse::<bool>().ok(),
+                        // Date filters
+                        "date_added_min" => filter.date_added_min = chrono::NaiveDate::from_str(value).ok(),
+                        "date_added_max" => filter.date_added_max = chrono::NaiveDate::from_str(value).ok(),
+                        "last_updated_min" => filter.last_updated_min = chrono::NaiveDate::from_str(value).ok(),
+                        "last_updated_max" => filter.last_updated_max = chrono::NaiveDate::from_str(value).ok(),
+                        "date_acquired_min" => filter.date_acquired_min = chrono::NaiveDate::from_str(value).ok(),
+                        "date_acquired_max" => filter.date_acquired_max = chrono::NaiveDate::from_str(value).ok(),
+                        // Number filters
+                        "age_years_min" => filter.age_years_min = value.parse::<u32>().ok(),
+                        "age_years_max" => filter.age_years_max = value.parse::<u32>().ok(),
+                        "purchase_price_min" => filter.purchase_price_min = value.parse::<f64>().ok(),
+                        "purchase_price_max" => filter.purchase_price_max = value.parse::<f64>().ok(),
+                        "estimated_value_min" => filter.estimated_value_min = value.parse::<f64>().ok(),
+                        "estimated_value_max" => filter.estimated_value_max = value.parse::<f64>().ok(),
+                        // Catchall
+                        _ => eprintln!("Warning: unknown filter field'{}'", field),
+                    }
+                }
+            }
+
+            // Call core function to list items
+            let items = get_filtered_items(&conn, filter)?;
+            println!("Listing {} items...", items.len());
             for item in items {
                 println!("{:?}", item);
             }
@@ -58,10 +96,45 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 eprintln!("Error: export requires a file path argument");
                 return Ok(());
             }
-            let items = get_all_items(&conn)?;
-            export_to_csv(&items, &args[1])?;
-            // Fetch items from core and export them
-            println!("Exported {} items to {}", items.len(), &args[1]);
+            let path = &args[1];
+            let mut filter = ItemFilter::default();
+
+            // Parse optional filters after path
+            for arg in args.iter().skip(2) {
+                if let Some((field, value)) = arg.split_once('=') {
+                    match field {
+                        // Partial string match filters
+                        "name" => filter.name_contains = Some(value.to_string()),
+                        "description" => filter.description_contains = Some(value.to_string()),
+                        "creator" => filter.creator_contains = Some(value.to_string()),
+                        "provenance" => filter.provenance_contains = Some(value.to_string()),
+                        // Enums / Exact match filters
+                        "category" => filter.category = ItemCategory::from_str(value).ok(),
+                        "action" => filter.action = ItemAction::from_str(value).ok(),
+                        "working" => filter.working = value.parse::<bool>().ok(),
+                        "deleted" => filter.deleted = value.parse::<bool>().ok(),
+                        // Date filters
+                        "date_added_min" => filter.date_added_min = chrono::NaiveDate::from_str(value).ok(),
+                        "date_added_max" => filter.date_added_max = chrono::NaiveDate::from_str(value).ok(),
+                        "last_updated_min" => filter.last_updated_min = chrono::NaiveDate::from_str(value).ok(),
+                        "last_updated_max" => filter.last_updated_max = chrono::NaiveDate::from_str(value).ok(),
+                        "date_acquired_min" => filter.date_acquired_min = chrono::NaiveDate::from_str(value).ok(),
+                        "date_acquired_max" => filter.date_acquired_max = chrono::NaiveDate::from_str(value).ok(),
+                        // Number filters
+                        "age_years_min" => filter.age_years_min = value.parse::<u32>().ok(),
+                        "age_years_max" => filter.age_years_max = value.parse::<u32>().ok(),
+                        "purchase_price_min" => filter.purchase_price_min = value.parse::<f64>().ok(),
+                        "purchase_price_max" => filter.purchase_price_max = value.parse::<f64>().ok(),
+                        "estimated_value_min" => filter.estimated_value_min = value.parse::<f64>().ok(),
+                        "estimated_value_max" => filter.estimated_value_max = value.parse::<f64>().ok(),
+                        // Catchall
+                        _ => eprintln!("Warning: unknown filter field'{}'", field),
+                    }
+                }
+            }
+            let items = get_filtered_items(&conn, filter)?;
+            export_to_csv(&items, path)?;
+            println!("Exported {} items to {}", items.len(), path);
         }
 
         "add" => {
@@ -159,7 +232,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Err(e) => eprintln!("Failed to update item {item_id}: {e}"),
             }
 
-    }     
+    }  
+    "help" => {
+            println!("Collection Catalog CLI");
+            println!("Usage:");
+            println!("  list field=value [field=value...]               - List all items");
+            println!("  export <path> field=value [field=value...]      - Export all items to CSV");
+            println!("  add <name> <description> <category> <action>    - Add a new item");
+            println!("  delete <id>                                     - Export all items to CSV");
+            println!("  update <item_id> field=value [field=value...]   - Update an existing item");
+            println!("  help                                            - Show this help message");
+
+            println!("\nFilterable fields for list/export:");
+            println!("  name, description, creator, provenance (partial match)");
+            println!("  category (Exact: Book, Artwork, Collectible, Document, Electronic, Furniture, Jewelry, Other)");
+            println!("  action (Exact: Keep, Sell)");
+            println!("  working (true/false)");
+            println!("  deleted (true/false)");
+            println!("  date_added_min, date_added_max (YYYY-MM-DD)");
+            println!("  last_updated_min, last_updated_max (YYYY-MM-DD)");
+            println!("  date_acquired_min, date_acquired_max (YYYY-MM-DD)");
+            println!("  age_years_min, age_years_max (integer)");       
+            println!("  purchase_price_min, purchase_price_max (float)");
+            println!("  estimated_value_min, estimated_value_max (float)");         
+    }   
     _ => {
             eprintln!("unknown command: {}", args[0]);
         }

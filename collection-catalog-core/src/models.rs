@@ -152,7 +152,7 @@ impl Item {
             action: ItemAction::from_str(&row.get::<_, String>("action")?).unwrap_or(ItemAction::Keep),
             // Default dates don't matter because this should always exist 
             date_added: NaiveDate::parse_from_str(&row.get::<_, String>("date_added")?, "%Y-%m-%d").unwrap_or(NaiveDate::from_ymd_opt(2000, 1, 1).unwrap()), 
-            last_updated: NaiveDate::parse_from_str(&row.get::<_, String>("date_added")?, "%Y-%m-%d").unwrap_or(NaiveDate::from_ymd_opt(2000, 1, 1).unwrap()), 
+            last_updated: NaiveDate::parse_from_str(&row.get::<_, String>("last_updated")?, "%Y-%m-%d").unwrap_or(NaiveDate::from_ymd_opt(2000, 1, 1).unwrap()), 
             deleted: row.get("deleted")?,
 
             // Optional fields
