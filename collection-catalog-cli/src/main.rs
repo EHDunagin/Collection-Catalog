@@ -26,10 +26,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if args.is_empty() {
         println!("Collection Catalog CLI");
         println!("Usage:");
-        println!("  list                                         - List all items");
-        println!("  export <path>                                - Export all items to CSV");
-        println!("  add <name> <description> <category> <action> - Add a new item");
-        println!("  delete <id>                                  - Export all items to CSV");
+        println!("  list                                            - List all items");
+        println!("  export <path>                                   - Export all items to CSV");
+        println!("  add <name> <description> <category> <action>    - Add a new item");
+        println!("  delete <id>                                     - Export all items to CSV");
+        println!("  update <item_id> field=value [field=value...]   - Update an existing item");
         return Ok(());
     }
 
