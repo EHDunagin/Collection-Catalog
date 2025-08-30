@@ -23,9 +23,14 @@ fn list_items() -> Result<Vec<Item>, String> {
     Ok(items)
 }
 
+#[tauri::command]
+fn greet(name: &str) -> String {
+    format!("Hello, {}! Welcome to the Collection Catalog!", name)
+}
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![list_items])
+        .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())
         .expect("error while running tauri applicateion");
 }

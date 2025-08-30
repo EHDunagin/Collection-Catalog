@@ -1,18 +1,15 @@
 const { invoke } = window.__TAURI__.core;
 
-let greetInputEl;
-let greetMsgEl;
+const greetButton = document.getElementById("greet-button");
+const greetMsg = document.getElementById("greet-msg");
 
-async function greet() {
-  // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  greetMsgEl.textContent = await invoke("greet", { name: greetInputEl.value });
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  greetInputEl = document.querySelector("#greet-input");
-  greetMsgEl = document.querySelector("#greet-msg");
-  document.querySelector("#greet-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    greet();
-  });
+greetButton.addEventListener("click", async () => {
+	try {
+		// Call the Rust command
+		const response = await invoke("greet", { name: "Eleanor" });
+		greetMsg.textContent = response;
+	} catch (error) {
+		console.error("Error calling Rust:", error);
+	}
 });
+
