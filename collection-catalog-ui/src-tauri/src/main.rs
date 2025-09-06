@@ -5,7 +5,7 @@ use std::fs;
 use std::path::Path;
 use std::sync::Mutex;
 
-use collection_catalog_core::{ init_db, get_all_items, Item };
+use collection_catalog_core::{ init_db, get_all_items, add_item, Item };
 use rusqlite::Connection;
 use tauri::State;
 
@@ -15,20 +15,18 @@ struct DbState(Mutex<Connection>);
 
 #[tauri::command]
 fn list_items(db: State<DbState>) -> Result<Vec<Item>, String> {
-
-    // println!("list_items called from frontend");
     let conn = db.0.lock().map_err(|e| e.to_string())?;
-    
-    // Return the items
-    let items =  get_all_items(&*conn).map_err(|e| e.to_string())?;
-    // println!("list_items returning {} items", items.len());
-    Ok(items)
+    Ok(get_all_items(&*conn).map_err(|e| e.to_string())?)
 }
 
+// TODO figure out how to use this in such a way as to take info from the frontend, create an Item,
+// and pass it into the function
 #[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! Welcome to the Collection Catalog!", name)
+fn new_item(db: State<DbState>, item: &Item) -> Result<(), String> {
+    let conn = db.0.lock().map_err(|e| e.to_string())?;
+    Ok(add_item(&*conn, item).map_err(|e| e.to_string())?)
 }
+
 
 fn main() {
     // Ensure data dir exists
