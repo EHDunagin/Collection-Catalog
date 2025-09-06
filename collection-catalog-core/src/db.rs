@@ -2,7 +2,7 @@ use std::str::FromStr;
 use std::collections::HashMap;
 use rusqlite::{params, Connection, Result, ToSql };
 use crate::models::{Item, ItemAction, ItemCategory, ItemFilter};
-use chrono::NaiveDate;
+use chrono::{ Local, NaiveDate };
 use anyhow::{ Result as AnyResult, anyhow };
 
 pub fn init_db(conn: &Connection) -> Result<()> {
@@ -170,6 +170,8 @@ pub fn add_item(conn: &Connection, item: &Item) -> AnyResult<()> {
     item.validate()
         .map_err(|errs| anyhow!("Validation failed: {}", errs.join("; ")))?;
 
+    let today = Local::now().date_naive();
+
     conn.execute(
         "INSERT INTO items (
             name,
@@ -192,8 +194,10 @@ pub fn add_item(conn: &Connection, item: &Item) -> AnyResult<()> {
             item.description,
             item.category.to_string(),
             item.action.to_string(),
-            item.date_added.to_string(),
-            item.last_updated.to_string(),
+            today.to_string(),
+            today.to_string(),
+            // item.date_added.to_string(),
+            // item.last_updated.to_string(),
             item.age_years,
             item.date_acquired.map(|d| d.to_string()),
             item.purchase_price,
@@ -212,6 +216,8 @@ pub fn update_item(conn: &Connection, item: &Item) -> AnyResult<()> {
 
     item.validate()
         .map_err(|errs| anyhow!("Validation failed: {}", errs.join("; ")))?;
+
+    let today = Local::now().date_naive();
 
     conn.execute(
         "UPDATE items SET
@@ -236,7 +242,8 @@ pub fn update_item(conn: &Connection, item: &Item) -> AnyResult<()> {
             item.category.to_string(),
             item.action.to_string(),
             item.date_added.to_string(),
-            item.last_updated.to_string(),
+            // item.last_updated.to_string(),
+            today.to_string(), // override last_updated
             item.age_years,
             item.date_acquired.map(|d| d.to_string()),
             item.purchase_price,

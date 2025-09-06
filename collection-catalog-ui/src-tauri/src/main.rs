@@ -22,9 +22,10 @@ fn list_items(db: State<DbState>) -> Result<Vec<Item>, String> {
 // TODO figure out how to use this in such a way as to take info from the frontend, create an Item,
 // and pass it into the function
 #[tauri::command]
-fn new_item(db: State<DbState>, item: &Item) -> Result<(), String> {
+fn new_item(db: State<DbState>, item: Item) -> Result<(), String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
-    Ok(add_item(&*conn, item).map_err(|e| e.to_string())?)
+    item.validate().map_err(|errs| errs.join(", "))?;
+    Ok(add_item(&conn, &item).map_err(|e| e.to_string())?)
 }
 
 
@@ -41,7 +42,7 @@ fn main() {
 
     tauri::Builder::default()
         .manage(DbState(Mutex::new(conn))) // add DB to app state
-        .invoke_handler(tauri::generate_handler![list_items])
+        .invoke_handler(tauri::generate_handler![list_items, new_item])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

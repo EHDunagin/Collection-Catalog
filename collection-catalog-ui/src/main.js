@@ -1,6 +1,7 @@
 const { invoke } = window.__TAURI__.core;
 
 document.addEventListener("DOMContentLoaded", () => {
+	// List items button
 	document.getElementById("list-button").addEventListener("click", async () => {
 		const items = await invoke("list_items");
 		console.log("loaded items:", items);
@@ -13,21 +14,29 @@ document.addEventListener("DOMContentLoaded", () => {
 			item_list.appendChild(li);
 		});
 	});
+
+	// Add item form
+	// document.getElementById("add-item-form").addEventListener("submit", async (e) => {
+	// 	e.preventDefault();
+
+	// 	const item = {
+	// 		id: 0, // backend will assign
+	// 		name: document.getElementById("item-name").value,
+	// 		description: document.getElementById("item-description").value,
+	// 		category: document.getElementById("item-category").value,
+	// 		action: document.getElementById("item-action").value,
+	// 		deleted: false
+	// 	};
+
+	// 	try {
+	// 		await invoke("new_item", { item });
+	// 		alert("Item added!");
+	// 		document.getElementById("list-button").click(); //refresh list
+	// 	} catch (err) {
+	// 		alert("Failed to add item: " + err);
+	// 	}
+	// });
 });
 
 
-
-
-// const greetButton = document.getElementById("greet-button");
-// const greetMsg = document.getElementById("greet-msg");
-
-// greetButton.addEventListener("click", async () => {
-// 	try {
-// 		// Call the Rust command
-// 		const response = await invoke("greet", { name: "Eleanor" });
-// 		greetMsg.textContent = response;
-// 	} catch (error) {
-// 		console.error("Error calling Rust:", error);
-// 	}
-// });
 

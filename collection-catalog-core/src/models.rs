@@ -2,9 +2,9 @@ use chrono::NaiveDate;
 use std::fmt;
 use std::str::FromStr;
 use rusqlite::Row;
-use serde::Serialize;
+use serde::{ Serialize, Deserialize };
 
-#[derive(Debug, Default, Clone, Serialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub enum ItemAction {
     #[default] Keep,
     Sell,
@@ -31,7 +31,7 @@ impl FromStr for ItemAction{
     }
 }
 
-#[derive(Debug, Default, Clone, Serialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub enum ItemCategory {
     #[default] Antique,
     Book,
@@ -86,14 +86,16 @@ impl FromStr for ItemCategory{
     }
 }
 
-#[derive(Debug, Default, Clone, Serialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct Item {
     pub id: i32,
     pub name: String,
     pub description: String,
     pub category: ItemCategory,
     pub action: ItemAction,
+    #[serde(default)]
     pub date_added: NaiveDate,
+    #[serde(default)]
     pub last_updated: NaiveDate,
     pub deleted: bool,
 
