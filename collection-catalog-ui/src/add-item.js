@@ -3,52 +3,65 @@ const { invoke } = window.__TAURI__.core;
 document.getElementById("addItemForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Helper function to add a field only if it has a value
-  const addIfValue = (obj, key, value) => {
-    if (value !== null && value !== undefined && value !== "") {
-      obj[key] = value;
+  let item = { id: 0, deleted: false }; // always included
+
+  function parseBooleanOrNull(value) {
+    if (value === "") return null;
+    if (value === "true") return true;
+    if (value === "false") return false;
+    return undefined; // fallback (shouldn't happen)
+  }
+  // Field configuration
+  const fieldConfig = {
+    name: { type: "string" },
+    description: { type: "string" },
+    category: { type: "string" },
+    action: { type: "string" },
+    age_years: { type: "int" },
+    date_acquired: { type: "string" }, // backend parses as date
+    purchase_price: { type: "float" },
+    estimated_value: { type: "float" },
+    creator: { type: "string" },
+    provenance: { type: "string" },
+    working: { type: "bool" }, // checkbox
+  };
+
+  // Helper: add values, with special handling for booleans
+  const addIfValue = (key, value, type) => {
+    if (type === "bool") {
+      item[key] = parseBooleanOrNull(value);
+      // item[key] = value; // always include, even false
+    } else if (value !== null && value !== undefined && value !== "") {
+      item[key] = value;
     }
   };
 
-  let item = {};
-  addIfValue(item, "id", 0); // backend assigns ID
-  addIfValue(item, "name", document.getElementById("name").value);
-  addIfValue(item, "description", document.getElementById("description").value);
-  addIfValue(item, "category", document.getElementById("category").value);
-  addIfValue(item, "action", document.getElementById("action").value);
-  addIfValue(
-    item,
-    "age_years",
-    document.getElementById("age_years").value
-      ? parseInt(document.getElementById("age_years").value)
-      : null
-  );
-  addIfValue(item, "date_acquired", document.getElementById("date_acquired").value || null);
-  addIfValue(
-    item,
-    "purchase_price",
-    document.getElementById("purchase_price").value
-      ? parseFloat(document.getElementById("purchase_price").value)
-      : null
-  );
-  addIfValue(
-    item,
-    "estimated_value",
-    document.getElementById("estimated_value").value
-      ? parseFloat(document.getElementById("estimated_value").value)
-      : null
-  );
-  addIfValue(item, "creator", document.getElementById("creator").value || null);
-  item["working"] = document.getElementById("working").checked; // boolean, always included
-  addIfValue(item, "provenance", document.getElementById("provenance").value || null);
+  // Process all configured fields
+  Object.entries(fieldConfig).forEach(([id, cfg]) => {
+    const el = document.getElementById(id);
+    let raw;
 
-  // These fields will be set by backend
-  item["deleted"] = false;
+    if (cfg.type === "bool") {
+      raw = el.checked; // always boolean
+    } else {
+      raw = el.value.trim();
+      if (raw === "") {
+        raw = null;
+      } else if (cfg.type === "int") {
+        raw = parseInt(raw);
+      } else if (cfg.type === "float") {
+        raw = parseFloat(raw);
+      }
+      // "string" stays as-is
+    }
+
+    addIfValue(id, raw, cfg.type);
+  });
 
   try {
     await invoke("new_item", { item });
     alert("Item added successfully!");
-    window.location.href = "index.html"; // redirect home
+    window.location.href = "index.html";
   } catch (err) {
     console.error("Failed to add item:", err);
     alert("Failed to add item: " + err);

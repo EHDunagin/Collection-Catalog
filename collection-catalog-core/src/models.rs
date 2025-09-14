@@ -170,7 +170,7 @@ impl Item {
     }
 }
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct ItemFilter {
     // Partial string matches
     pub name_contains: Option<String>,
