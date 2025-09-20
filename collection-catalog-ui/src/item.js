@@ -37,9 +37,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("item-details").style.display = "block";
   });
 
-  // Wire up buttons (placeholders for now)
-  document.getElementById("delete-button").addEventListener("click", () => {
-    alert("TODO: confirm & delete item " + id);
+  document.getElementById("delete-button").addEventListener("click", async () => {
+    if(!confirm("Are you sure you want to delete this item?")) return;
+
+    try {
+      await invoke("delete_item", { id: parseInt( id, 10 ) });
+      alert("Item deleted successfully.");
+      window.location.href = "index.html"; // Redirect back to home
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      alert("Failed to delete item.");
+    }
+    
   });
 
   document.getElementById("update-form").addEventListener("submit", async (e) => {
@@ -94,6 +103,7 @@ function renderItem(item) {
 }
 
 function prefillForm(item) {
+  // Pre-fill form with current item data
   document.getElementById("update-name").value = item.name;
   document.getElementById("update-description").value = item.description || "";
   document.getElementById("update-category").value = item.category || "";
