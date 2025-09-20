@@ -18,12 +18,86 @@
     <button id="update-button">Update Item</button>
     <button id="delete-button">Delete Item</button>
 
-<<<<<<< HEAD
-    <br>
+    <!-- Update Form (hidden by default) -->
+    <div id="update-form-container" style="display:none; margin-top:20px;">
+      <h3>Update Item</h3>
+      <form id="update-form">
+        <label>
+          Name: <input type="text" name="name" id="update-name">
+        </label><br><br>
+
+        <label>
+          Description: <textarea name="description" id="update-description"></textarea>
+        </label><br><br>
+
+        <label>
+          Category:
+          <select name="category" id="update-category">
+            <option value="">-- Select --</option>
+            <option value="Antique">Antique</option>
+            <option value="Book">Book</option>
+            <option value="Decor">Decor</option>
+            <option value="ElectronicDevice">Electronic Device</option>
+            <option value="Furniture">Furniture</option>
+            <option value="HouseholdItem">Household Item</option>
+            <option value="Kitchenware">Kitchenware</option>
+            <option value="MineralSpecimen">Mineral Specimen</option>
+            <option value="Tool">Tool</option>
+            <option value="Wood">Wood</option>
+            <option value="Other">Other</option>
+          </select>
+        </label><br><br>
+
+        <label>
+          Action:
+          <select name="action" id="update-action">
+            <option value="">-- Select --</option>
+            <option value="Keep">Keep</option>
+            <option value="Sell">Sell</option>
+          </select>
+        </label><br><br>
+
+        <label>
+          Creator: <input type="text" name="creator" id="update-creator">
+        </label><br><br>
+
+        <label>
+          Provenance: <input type="text" name="provenance" id="update-provenance">
+        </label><br><br>
+
+        <label>
+          Age (Years): <input type="number" name="age_years" id="update-age">
+        </label><br><br>
+
+        <label>
+          Date Acquired: <input type="date" name="date_acquired" id="update-date-acquired">
+        </label><br><br>
+
+        <label>
+          Purchase Price: <input type="number" step="0.01" name="purchase_price" id="update-purchase-price">
+        </label><br><br>
+
+        <label>
+          Estimated Value: <input type="number" step="0.01" name="estimated_value" id="update-estimated-value">
+        </label><br><br>
+
+        <label>
+          Working:
+          <select name="working" id="update-working">
+            <option value="">-- Leave Unchanged --</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </label><br><br>
+
+        <button type="submit">Save Changes</button>
+        <button type="button" id="cancel-update">Cancel</button>
+      </form>
+    </div>
+
+    <br><br>
     <a href="index.html">Back to Item List</a>
 
-=======
->>>>>>> 598b64bb31077806a2c8db4a017dcd7ffdae0dba
     <script src="item.js"></script>
   </body>
 </html>

@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       items.forEach((item) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td><a href=item.html?id=${item.id}>${item.id}</a></td>
+          <td><a href="item.html?id=${item.id}">${item.id}</a></td>
           <td>${item.name}</td>
           <td>${item.description || ""}</td>
           <td>${item.category || ""}</td>
@@ -57,6 +57,9 @@ document.addEventListener("DOMContentLoaded", async () => {
  
 
 document.getElementById("export-btn").addEventListener("click", async () => {
+  alert("TODO Functionality not implemented!");
+  // Getting console error for Null
+  // Since the export-btn exists check in Tauri. Probably need to create export_items_csv
   const params = new URLSearchParams(window.location.search);
   const filter = Object.fromEntries(params.entries());
   await invoke("export_items_csv", { filter });

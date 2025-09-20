@@ -13,9 +13,6 @@
     <main class="container">
       <h1>Collection Catalog</h1>
 
-      <button id="list-button">List Items</button>
-      <ul id="items-list"></ul>
-
       <h2>Filter Items</h2>
       <form id="filter-form">
         
@@ -80,7 +77,6 @@
               <option value="">-- Any --</option>
               <option value="Sell">Sell</option>
               <option value="Keep">Keep</option>
-              <!-- Add real enum values -->
             </select>
           </label><br>
           
@@ -94,15 +90,6 @@
               <option value="false">No</option>
             </select>
           </label><br>
-
-          <!-- <label>
-            Deleted:
-            <select name="deleted">
-              <option value="">-- Any --</option>
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
-          </label> -->
 
           <input type="hidden" name="deleted" value="false">
         </fieldset>
