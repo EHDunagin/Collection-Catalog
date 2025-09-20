@@ -30,7 +30,6 @@ document.getElementById("addItemForm").addEventListener("submit", async (e) => {
   const addIfValue = (key, value, type) => {
     if (type === "bool") {
       item[key] = parseBooleanOrNull(value);
-      // item[key] = value; // always include, even false
     } else if (value !== null && value !== undefined && value !== "") {
       item[key] = value;
     }

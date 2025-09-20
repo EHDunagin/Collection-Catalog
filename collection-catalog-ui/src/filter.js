@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       items.forEach((item) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${item.id}</td>
+          <td><a href=item.html?id=${item.id}>${item.id}</a></td>
           <td>${item.name}</td>
           <td>${item.description || ""}</td>
           <td>${item.category || ""}</td>
