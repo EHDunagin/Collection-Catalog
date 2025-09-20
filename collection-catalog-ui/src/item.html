@@ -4,15 +4,20 @@
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="./styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Collection Catalog</title>
-    <script src="./node_modules/@tauri-apps/api/tauri.js"></script>
-    <script type="module" src="./main.js"></script>
+    <title>Item Details</title>
   </head>
-
+  
   <body>
-
     <h2>Item Details</h2>
-    <div id="item-details"></div>
-    <button id="delete-btn">Delete</button>
-    <button id="update-btn">Update</button>
-</body>
+
+    <div id="item-details">
+      Loading item...
+    </div>
+
+    <br>
+    <button id="update-button">Update Item</button>
+    <button id="delete-button">Delete Item</button>
+
+    <script src="item.js"></script>
+  </body>
+</html>
