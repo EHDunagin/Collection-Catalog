@@ -13,7 +13,6 @@ use collection_catalog_core::{
     ItemCategory, 
     ItemAction,
     ItemFilter,
-    get_all_items,
     get_filtered_items,
     export_to_csv
 };
