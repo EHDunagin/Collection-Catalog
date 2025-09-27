@@ -1,9 +1,27 @@
 const { invoke } = window.__TAURI__.core;
 
+let currentFilter = {}; // Defined globally so export-csv can use after created on DOMContentLoaded
+const exportBtn = document.getElementById("export-csv");
+exportBtn.disabled = true; // disable until results are loaded
+
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
-  const numeric_filters = ["age_years_min", "age_years_max", "purchase_price_min", "purchase_price_max", "estimated_value_min", "estimated_value_max"];
-  const date_filters = ["date_added_min", "date_added_max", "last_updated_min", "last_updated_max", "date_acquired_min", "date_acquired_max"];
+  const numeric_filters = [
+    "age_years_min",
+    "age_years_max",
+    "purchase_price_min",
+    "purchase_price_max",
+    "estimated_value_min",
+    "estimated_value_max",
+  ];
+  const date_filters = [
+    "date_added_min",
+    "date_added_max",
+    "last_updated_min",
+    "last_updated_max",
+    "date_acquired_min",
+    "date_acquired_max",
+  ];
   const filter = {};
 
   // Convert query params → filter object (ignoring blanks)
@@ -24,6 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  currentFilter = filter;
   console.log("Built filter:", filter);
 
   try {
@@ -49,21 +68,39 @@ document.addEventListener("DOMContentLoaded", async () => {
         `;
         tbody.appendChild(tr);
       });
+      exportBtn.disabled = false; // enable export only if items exist
     }
   } catch (err) {
     console.error("Error filtering items:", err);
+    exportBtn.disabled = true;
   }
 });
  
+document.getElementById("export-csv").addEventListener("click", async () => {
+  try {
+    // Retrieve CSV string of filtered items from backend
+    const csvContent = await invoke("export_filtered_items_to_csv", { 
+      filter: currentFilter,
+    });
 
-document.getElementById("export-btn").addEventListener("click", async () => {
-  alert("TODO Functionality not implemented!");
-  // Getting console error for Null
-  // Since the export-btn exists check in Tauri. Probably need to create export_items_csv
-  const params = new URLSearchParams(window.location.search);
-  const filter = Object.fromEntries(params.entries());
-  await invoke("export_items_csv", { filter });
-  alert("Exported items to CSV.");
+    // Convert to Blob
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary link to trigger a download
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "collection_list.csv";
+    document.body.appendChild(a);
+    a.click();
+
+    console.log("Export initiated.", url)
+
+    // Clean up
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error("Export failed:", err);
+  }
 });
 
-loadFilteredItems();

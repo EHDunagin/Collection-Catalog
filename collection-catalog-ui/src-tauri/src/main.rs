@@ -6,7 +6,7 @@ use std::path::Path;
 use std::sync::Mutex;
 use std::collections::HashMap;
 
-use collection_catalog_core::{ init_db, get_all_items, get_filtered_items, get_item_by_id, add_item, update_item_fields, soft_delete_item, export_to_csv, Item, ItemFilter };
+use collection_catalog_core::{ init_db, get_all_items, get_filtered_items, get_item_by_id, add_item, update_item_fields, soft_delete_item, export_to_csv_string, Item, ItemFilter };
 use rusqlite::Connection;
 use tauri::State;
 
@@ -56,7 +56,15 @@ fn delete_item(db: State<DbState>, id: i32) -> Result<(), String> {
     soft_delete_item(&*conn, id).map_err(|e| e.to_string())
 }
 
-
+#[tauri::command]
+fn export_filtered_items_to_csv(
+    db: State<DbState>,
+    filter: ItemFilter,
+) -> Result<String, String> {
+    let conn = db.0.lock().map_err(|e| e.to_string())?;
+    let items = get_filtered_items(&*conn, filter).map_err(|e| e.to_string())?;
+    export_to_csv_string(&items).map_err(|e| e.to_string())
+}
 
 fn main() {
     // Ensure data dir exists
@@ -77,8 +85,8 @@ fn main() {
             filter_items,
             get_item,
             update_item,
-            delete_item
-
+            delete_item,
+            export_filtered_items_to_csv
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
