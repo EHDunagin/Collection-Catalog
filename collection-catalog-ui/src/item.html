@@ -18,6 +18,17 @@
     <button id="update-button">Update Item</button>
     <button id="delete-button" class="danger">Delete Item</button>
 
+    <!-- Delete confirmation modal hidden by default -->
+    <div id="confirm-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <p id="confirm-text">Are you sure you want to delete this item?</p>
+        <div class="modal-buttons">
+          <button id="confirm-yes">Yes</button>
+          <button id="confirm-no">Cancel</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Update Form (hidden by default) -->
     <div id="update-form-container" style="display:none; margin-top:20px;">
       <h3>Update Item</h3>

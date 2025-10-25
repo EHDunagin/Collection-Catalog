@@ -1,6 +1,12 @@
 const { invoke } = window.__TAURI__.core;
 
+console.log(">>> item.js script loaded");
+window._itemScriptCount = (window._itemScriptCount || 0) + 1;
+console.log(">>> item.js load count:", window._itemScriptCount);
+
+
 document.addEventListener("DOMContentLoaded", async () => {
+  console.log(">>> DOMContentLoaded fired");
   const params = new URLSearchParams(window.location.search);
   const id = Number(params.get("id"));
 
@@ -28,22 +34,33 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   document.getElementById("update-button").addEventListener("click", () => {
+    console.log(">>> Update button clicked");
     document.getElementById("update-form-container").style.display = "block";
     document.getElementById("item-details").style.display = "none";
   });
 
   document.getElementById("cancel-update").addEventListener("click", () => {
+    console.log(">>> Cancel button clicked");
     document.getElementById("update-form-container").style.display = "none";
     document.getElementById("item-details").style.display = "block";
   });
 
   document.getElementById("delete-button").addEventListener("click", async () => {
-    if(!confirm("Are you sure you want to delete this item?")) return;
+    console.log(">>> Delete button clicked");
+    
+    const confirmed = await confirmDialog("Are you sure you want to delete this item?");
+    if (!confirmed) {
+      console.log("Deletion cancelled by user");
+      return;
+    }
+    console.log("User confirmed deletion");
 
     try {
       await invoke("delete_item", { id: parseInt( id, 10 ) });
       alert("Item deleted successfully.");
-      window.location.href = "index.html"; // Redirect back to home
+      document.getElementById("item-details").style.display = "Item deleted.";
+      // window.location.href = "index.html"; // Redirect back to home
+
     } catch (error) {
       console.error("Error deleting item:", error);
       alert("Failed to delete item.");
@@ -52,6 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   document.getElementById("update-form").addEventListener("submit", async (e) => {
+    console.log(">>> Update form submitted");
     e.preventDefault();
     if (!currentItem) return;
 
@@ -67,7 +85,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       await invoke("update_item", { id: currentItem.id, updates });
       alert("Item updated successfully!");
-      window.location.reload(); // reload to show updated data
+      // Re-fetch the item and re-render it
+      const updatedItem = await invoke("get_item", { id: currentItem.id });
+      renderItem(updatedItem);
+
+      // Hide the form, show the details again
+      document.getElementById("update-form-container").style.display = "none";
+      document.getElementById("item-details").style.display = "block";
     } catch (err) {
       console.error("Update failed:", err);
       alert("Failed to update item.");
@@ -117,4 +141,29 @@ function prefillForm(item) {
   if (item.working !== null) {
     document.getElementById("update-working").value = item.working ? "true" : "false";
   }
+}
+
+function confirmDialog(message) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("confirm-modal");
+    const text = document.getElementById("confirm-text");
+    const yesBtn = document.getElementById("confirm-yes");
+    const noBtn = document.getElementById("confirm-no");
+
+    text.textContent = message;
+    modal.style.display = "flex";
+
+    function cleanup(result) {
+      modal.style.display = "none";
+      yesBtn.removeEventListener("click", onYes);
+      noBtn.removeEventListener("click", onNo);
+      resolve(result);
+    }
+
+    function onYes() { cleanup(true); }
+    function onNo() { cleanup(false); }
+
+    yesBtn.addEventListener("click", onYes);
+    noBtn.addEventListener("click", onNo);
+  });
 }
