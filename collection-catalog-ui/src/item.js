@@ -1,12 +1,7 @@
 const { invoke } = window.__TAURI__.core;
 
-console.log(">>> item.js script loaded");
-window._itemScriptCount = (window._itemScriptCount || 0) + 1;
-console.log(">>> item.js load count:", window._itemScriptCount);
-
-
 document.addEventListener("DOMContentLoaded", async () => {
-  console.log(">>> DOMContentLoaded fired");
+
   const params = new URLSearchParams(window.location.search);
   const id = Number(params.get("id"));
 
@@ -34,32 +29,38 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   document.getElementById("update-button").addEventListener("click", () => {
-    console.log(">>> Update button clicked");
+    // Show update form and hide current item details, update button and delete button
     document.getElementById("update-form-container").style.display = "block";
     document.getElementById("item-details").style.display = "none";
+    document.getElementById("update-button").style.display = "none";
+    document.getElementById("delete-button").style.display = "none";
   });
 
   document.getElementById("cancel-update").addEventListener("click", () => {
-    console.log(">>> Cancel button clicked");
     document.getElementById("update-form-container").style.display = "none";
     document.getElementById("item-details").style.display = "block";
+    document.getElementById("update-button").style.display = "inline";
+    document.getElementById("delete-button").style.display = "inline";
   });
 
   document.getElementById("delete-button").addEventListener("click", async () => {
-    console.log(">>> Delete button clicked");
     
     const confirmed = await confirmDialog("Are you sure you want to delete this item?");
     if (!confirmed) {
       console.log("Deletion cancelled by user");
       return;
     }
-    console.log("User confirmed deletion");
 
     try {
       await invoke("delete_item", { id: parseInt( id, 10 ) });
-      alert("Item deleted successfully.");
-      document.getElementById("item-details").style.display = "Item deleted.";
-      // window.location.href = "index.html"; // Redirect back to home
+
+      // Replace item details with success message
+      const details = document.getElementById("item-details");
+      details.innerHTML = "<p style='color: green; font-weight: bold;'>Item deleted successfully.</p>";
+
+      // Hide update and delete buttons
+      document.getElementById("update-button").style.display = "none";
+      document.getElementById("delete-button").style.display = "none";
 
     } catch (error) {
       console.error("Error deleting item:", error);
@@ -69,7 +70,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   document.getElementById("update-form").addEventListener("submit", async (e) => {
-    console.log(">>> Update form submitted");
     e.preventDefault();
     if (!currentItem) return;
 
@@ -84,14 +84,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
       await invoke("update_item", { id: currentItem.id, updates });
-      alert("Item updated successfully!");
       // Re-fetch the item and re-render it
       const updatedItem = await invoke("get_item", { id: currentItem.id });
       renderItem(updatedItem);
 
-      // Hide the form, show the details again
+      // Hide the form, show the details and buttons again
       document.getElementById("update-form-container").style.display = "none";
       document.getElementById("item-details").style.display = "block";
+      document.getElementById("update-button").style.display = "inline";
+      document.getElementById("delete-button").style.display = "inline";
+
+      // Add success message to item-details
+      let details = document.getElementById("item-details");
+      details.innerHTML += "<p style='color: green; font-weight: bold;'>Item updated successfully.</p>";
     } catch (err) {
       console.error("Update failed:", err);
       alert("Failed to update item.");
