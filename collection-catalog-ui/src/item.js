@@ -103,6 +103,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  document.getElementById("restore-button").addEventListener("click", async () => {
+    const updates = {deleted: "false"};
+    try {
+      await invoke("update_item", {id: currentItem.id, updates});
+      // Re-fetch the item and re-render it
+      const restoredItem = await invoke("get_item", { id: currentItem.id });
+      renderItem(restoredItem);
+
+      // Add success message to item-details
+      let details = document.getElementById("item-details");
+      details.innerHTML += "<p style='color: green; font-weight: bold;'>Item restored successfully.</p>";
+    } catch (err) {
+      console.error("Restore failed:", err);
+      alert("Failed to restore item.");
+    }
+  });
+
 });
 
 
@@ -129,6 +146,14 @@ function renderItem(item) {
       <tr><th>Last Updated</th><td>${item.last_updated}</td></tr>
     </table>
   `;
+  
+  // check whether item.deleted is true. If so, hide update/delete options. Show a Restore button instead.
+  if (item.deleted) {
+    document.getElementById("update-button").style.display = "none";
+    document.getElementById("delete-button").style.display = "none";
+    const rb = document.getElementById("restore-button");
+    rb.style.display = "inline-block";
+  }
 }
 
 function prefillForm(item) {
