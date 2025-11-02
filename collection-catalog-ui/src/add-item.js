@@ -59,8 +59,12 @@ document.getElementById("addItemForm").addEventListener("submit", async (e) => {
 
   try {
     await invoke("new_item", { item });
-    alert("Item added successfully!");
-    window.location.href = "index.html";
+      // Add success message to item-details replacing form
+      let details = document.getElementById("item-details");
+      details.innerHTML = "<p style='color: green; font-weight: bold;'>Item added successfully.</p>"
+
+    // alert("Item added successfully!");
+    // window.location.href = "index.html";
   } catch (err) {
     console.error("Failed to add item:", err);
     alert("Failed to add item: " + err);

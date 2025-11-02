@@ -6,96 +6,100 @@
 </head>
 <body>
   <h1>Add a New Item</h1>
-  <form id="addItemForm">
-    <!-- Required fields -->
-    <label>
-      Name:
-      <input type="text" id="name" required maxlength="50" />
-    </label>
-    <br/>
 
-    <label>
-      Description:
-      <textarea id="description" required></textarea>
-    </label>
-    <br/>
+  <div id="item-details">
 
-    <label>
-      Category:
-      <select id="category">
-        <option value="Antique">Antique</option>
-        <option value="Book">Book</option>
-        <option value="Decor">Decor</option>
-        <option value="ElectronicDevice">Electronic Device</option>
-        <option value="Furniture">Furniture</option>
-        <option value="HouseholdItem">Household Item</option>
-        <option value="Kitchenware">Kitchenware</option>
-        <option value="MineralSpecimen">Mineral Specimen</option>
-        <option value="Tool">Tool</option>
-        <option value="Wood">Wood</option>
-        <option value="Other">Other</option>
-      </select>
-    </label>
-    <br/>
+    <form id="addItemForm">
+      <!-- Required fields -->
+      <label>
+        Name:
+        <input type="text" id="name" required maxlength="50" />
+      </label>
+      <br/>
 
-    <label>
-      Action:
-      <select id="action">
-        <option value="Keep">Keep</option>
-        <option value="Sell">Sell</option>
-      </select>
-    </label>
-    <br/>
+      <label>
+        Description:
+        <textarea id="description" required></textarea>
+      </label>
+      <br/>
 
-    <!-- Optional fields -->
-    <label>
-      Age (years):
-      <input type="number" id="age_years" min="0" />
-    </label>
-    <br/>
+      <label>
+        Category:
+        <select id="category">
+          <option value="Antique">Antique</option>
+          <option value="Book">Book</option>
+          <option value="Decor">Decor</option>
+          <option value="ElectronicDevice">Electronic Device</option>
+          <option value="Furniture">Furniture</option>
+          <option value="HouseholdItem">Household Item</option>
+          <option value="Kitchenware">Kitchenware</option>
+          <option value="MineralSpecimen">Mineral Specimen</option>
+          <option value="Tool">Tool</option>
+          <option value="Wood">Wood</option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+      <br/>
 
-    <label>
-      Date Acquired:
-      <input type="date" id="date_acquired" />
-    </label>
-    <br/>
+      <label>
+        Action:
+        <select id="action">
+          <option value="Keep">Keep</option>
+          <option value="Sell">Sell</option>
+        </select>
+      </label>
+      <br/>
 
-    <label>
-      Purchase Price:
-      <input type="number" id="purchase_price" min="0" step="0.01" />
-    </label>
-    <br/>
+      <!-- Optional fields -->
+      <label>
+        Age (years):
+        <input type="number" id="age_years" min="0" />
+      </label>
+      <br/>
 
-    <label>
-      Estimated Value:
-      <input type="number" id="estimated_value" min="0" step="0.01" />
-    </label>
-    <br/>
+      <label>
+        Date Acquired:
+        <input type="date" id="date_acquired" />
+      </label>
+      <br/>
 
-    <label>
-      Creator:
-      <input type="text" id="creator" />
-    </label>
-    <br/>
+      <label>
+        Purchase Price:
+        <input type="number" id="purchase_price" min="0" step="0.01" />
+      </label>
+      <br/>
 
-    <label>
-      In Working Condition:
-      <select id="working">
-        <option value="">Not Applicable</option>
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
-    </label>
-    <br/>
+      <label>
+        Estimated Value:
+        <input type="number" id="estimated_value" min="0" step="0.01" />
+      </label>
+      <br/>
 
-    <label>
-      Place of Origin:
-      <textarea id="provenance"></textarea>
-    </label>
-    <br/>
+      <label>
+        Creator:
+        <input type="text" id="creator" />
+      </label>
+      <br/>
 
-    <button type="submit">Add Item</button>
-  </form>
+      <label>
+        In Working Condition:
+        <select id="working">
+          <option value="">Not Applicable</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </label>
+      <br/>
+
+      <label>
+        Place of Origin:
+        <textarea id="provenance"></textarea>
+      </label>
+      <br/>
+
+      <button type="submit">Add Item</button>
+    </form>
+  </div>
 
   <p><a href="index.html">Back to Home</a></p>
 
