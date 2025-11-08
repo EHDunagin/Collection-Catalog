@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filtered Items</title>
+  </head>
+
+  <body>
+    <h2>Filtered Items</h2>
+    <table id="results-table" border="1">
+    	<thead>
+       		<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>Description</th>
+				<th>Category</th>
+				<th>Creator</th>
+				<th>Working</th>
+				<th>Action</th>
+				<th>Last Updated</th>
+        	</tr>
+    	</thead>
+    	<tbody id="results-body">
+		<!-- rows will be injected here -->
+    	</tbody>
+    </table>
+
+    <button id="export-csv">Export to CSV</button>
+    <br><br>
+    <p><a href="index.html">Back to Home</a></p>
+
+    <script src="filter.js"></script>
+
+  </body>
+
+

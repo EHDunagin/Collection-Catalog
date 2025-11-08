@@ -1,7 +1,8 @@
 use std::str::FromStr;
+use std::collections::HashMap;
 use rusqlite::{params, Connection, Result, ToSql };
 use crate::models::{Item, ItemAction, ItemCategory, ItemFilter};
-use chrono::NaiveDate;
+use chrono::{ Local, NaiveDate };
 use anyhow::{ Result as AnyResult, anyhow };
 
 pub fn init_db(conn: &Connection) -> Result<()> {
@@ -169,6 +170,8 @@ pub fn add_item(conn: &Connection, item: &Item) -> AnyResult<()> {
     item.validate()
         .map_err(|errs| anyhow!("Validation failed: {}", errs.join("; ")))?;
 
+    let today = Local::now().date_naive();
+
     conn.execute(
         "INSERT INTO items (
             name,
@@ -191,8 +194,10 @@ pub fn add_item(conn: &Connection, item: &Item) -> AnyResult<()> {
             item.description,
             item.category.to_string(),
             item.action.to_string(),
-            item.date_added.to_string(),
-            item.last_updated.to_string(),
+            today.to_string(),
+            today.to_string(),
+            // item.date_added.to_string(),
+            // item.last_updated.to_string(),
             item.age_years,
             item.date_acquired.map(|d| d.to_string()),
             item.purchase_price,
@@ -211,6 +216,8 @@ pub fn update_item(conn: &Connection, item: &Item) -> AnyResult<()> {
 
     item.validate()
         .map_err(|errs| anyhow!("Validation failed: {}", errs.join("; ")))?;
+
+    let today = Local::now().date_naive();
 
     conn.execute(
         "UPDATE items SET
@@ -235,7 +242,8 @@ pub fn update_item(conn: &Connection, item: &Item) -> AnyResult<()> {
             item.category.to_string(),
             item.action.to_string(),
             item.date_added.to_string(),
-            item.last_updated.to_string(),
+            // item.last_updated.to_string(),
+            today.to_string(), // override last_updated
             item.age_years,
             item.date_acquired.map(|d| d.to_string()),
             item.purchase_price,
@@ -265,3 +273,41 @@ pub fn soft_delete_item(conn: &Connection, item_id: i32) -> Result<()> {
     Ok(())
 }
 
+pub fn update_item_fields(
+    conn: &Connection,
+    id: i32,
+    updates: HashMap<&str, String>,
+) -> AnyResult<()> {
+    // Step 1: Fetch current item
+    let item_option = get_item_by_id(conn, id)?;
+    let mut item = item_option.unwrap();
+
+    // Step 2: Apply updates
+    for (field, value) in updates {
+        match field {
+            "name" => item.name = value,
+            "description" => item.description = value,
+            "category" => item.category = ItemCategory::from_str(&value)
+                .unwrap_or(ItemCategory::Other),
+            "action" => item.action = ItemAction::from_str(&value)
+                .unwrap_or(ItemAction::Keep),
+            "date_added" => item.date_added = NaiveDate::parse_from_str(&value, "%Y-%m-%d")?,
+            "last_updated" => item.last_updated = NaiveDate::parse_from_str(&value, "%Y-%m-%d")?,
+            "age_years" => item.age_years = Some(value.parse::<u32>()?),
+            "date_acquired" => item.date_acquired = Some(NaiveDate::parse_from_str(&value, "%Y-%m-%d")?),
+            "purchase_price" => item.purchase_price = Some(value.parse::<f64>()?),
+            "estimated_value" => item.estimated_value = Some(value.parse::<f64>()?),
+            "creator" => item.creator = Some(value),
+            "working" => item.working = Some(value.parse::<bool>()?),
+            "provenance" => item.provenance = Some(value),
+            "deleted" => item.deleted = value.parse::<bool>()?,
+            _ => return Err(anyhow!("Unknown field: {}", field)),
+        }
+    }
+
+    // Always bump last_updated to "now" when updating
+    item.last_updated = chrono::Utc::now().date_naive();
+
+    // Step 3: Call core update
+    update_item(&conn, &item)
+}
