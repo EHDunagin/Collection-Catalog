@@ -78,27 +78,11 @@ document.addEventListener("DOMContentLoaded", async () => {
  
 document.getElementById("export-csv").addEventListener("click", async () => {
   try {
-    // Retrieve CSV string of filtered items from backend
+    // Use Rust function to export filtered items to CSV
     const csvContent = await invoke("export_filtered_items_to_csv", { 
       filter: currentFilter,
     });
 
-    // Convert to Blob
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-
-    // Create a temporary link to trigger a download
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "collection_list.csv";
-    document.body.appendChild(a);
-    a.click();
-
-    console.log("Export initiated.", url)
-
-    // Clean up
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   } catch (err) {
     console.error("Export failed:", err);
   }
