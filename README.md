@@ -1,5 +1,4 @@
 # Collection-Catalog
 Desktop application for cataloging collections
 
-TODO
-1. Implement Edit page and functionality
+Simple CRUD desktop application to practice Rust.
