@@ -1,9 +1,9 @@
-use std::str::FromStr;
-use std::collections::HashMap;
-use rusqlite::{params, Connection, Result, ToSql };
 use crate::models::{Item, ItemAction, ItemCategory, ItemFilter};
-use chrono::{ Local, NaiveDate };
-use anyhow::{ Result as AnyResult, anyhow };
+use anyhow::{Result as AnyResult, anyhow};
+use chrono::{Local, NaiveDate};
+use rusqlite::{Connection, Result, ToSql, params};
+use std::collections::HashMap;
+use std::str::FromStr;
 
 pub fn init_db(conn: &Connection) -> Result<()> {
     conn.execute(
@@ -37,7 +37,7 @@ pub fn get_all_items(conn: &Connection) -> Result<Vec<Item>> {
             age_years, date_acquired, purchase_price,
             estimated_value, creator, working, provenance, deleted
         FROM items
-        WHERE deleted = 0"
+        WHERE deleted = 0",
     )?;
 
     let item_iter = stmt.query_map([], |row| {
@@ -45,12 +45,16 @@ pub fn get_all_items(conn: &Connection) -> Result<Vec<Item>> {
             id: row.get(0)?,
             name: row.get(1)?,
             description: row.get(2)?,
-            category: ItemCategory::from_str(row.get::<_, String>(3)?.as_str()).unwrap_or(ItemCategory::Other),
-            action: ItemAction::from_str(row.get::<_, String>(4)?.as_str()).unwrap_or(ItemAction::Keep),
+            category: ItemCategory::from_str(row.get::<_, String>(3)?.as_str())
+                .unwrap_or(ItemCategory::Other),
+            action: ItemAction::from_str(row.get::<_, String>(4)?.as_str())
+                .unwrap_or(ItemAction::Keep),
             date_added: NaiveDate::parse_from_str(&row.get::<_, String>(5)?, "%Y-%m-%d").unwrap(),
             last_updated: NaiveDate::parse_from_str(&row.get::<_, String>(6)?, "%Y-%m-%d").unwrap(),
             age_years: row.get(7)?,
-            date_acquired: row.get::<_, Option<String>>(8)?.and_then(|s| NaiveDate::parse_from_str(&s, "%Y-%m-%d").ok()),
+            date_acquired: row
+                .get::<_, Option<String>>(8)?
+                .and_then(|s| NaiveDate::parse_from_str(&s, "%Y-%m-%d").ok()),
             purchase_price: row.get(9)?,
             estimated_value: row.get(10)?,
             creator: row.get(11)?,
@@ -72,22 +76,26 @@ pub fn get_item_by_id(conn: &Connection, id: i32) -> Result<Option<Item>> {
             age_years, date_acquired, purchase_price,
             estimated_value, creator, working, provenance, deleted
         FROM items
-        WHERE id = ?1"
+        WHERE id = ?1",
     )?;
 
     let mut rows = stmt.query(params![id])?;
 
     if let Some(row) = rows.next()? {
-        Ok(Some(Item {   
+        Ok(Some(Item {
             id: row.get(0)?,
             name: row.get(1)?,
             description: row.get(2)?,
-            category: ItemCategory::from_str(row.get::<_, String>(3)?.as_str()).unwrap_or(ItemCategory::Other),
-            action: ItemAction::from_str(row.get::<_, String>(4)?.as_str()).unwrap_or(ItemAction::Keep),
+            category: ItemCategory::from_str(row.get::<_, String>(3)?.as_str())
+                .unwrap_or(ItemCategory::Other),
+            action: ItemAction::from_str(row.get::<_, String>(4)?.as_str())
+                .unwrap_or(ItemAction::Keep),
             date_added: NaiveDate::parse_from_str(&row.get::<_, String>(5)?, "%Y-%m-%d").unwrap(),
             last_updated: NaiveDate::parse_from_str(&row.get::<_, String>(6)?, "%Y-%m-%d").unwrap(),
             age_years: row.get(7)?,
-            date_acquired: row.get::<_, Option<String>>(8)?.and_then(|s| NaiveDate::parse_from_str(&s, "%Y-%m-%d").ok()),
+            date_acquired: row
+                .get::<_, Option<String>>(8)?
+                .and_then(|s| NaiveDate::parse_from_str(&s, "%Y-%m-%d").ok()),
             purchase_price: row.get(9)?,
             estimated_value: row.get(10)?,
             creator: row.get(11)?,
@@ -132,26 +140,86 @@ pub fn get_filtered_items(conn: &Connection, filter: ItemFilter) -> rusqlite::Re
     push_like!(filter.provenance_contains, "provenance");
 
     // Exact match filters (Enums and bools)
-    push_filter!(filter.category.map(|c| c.to_string()), "category", "category", "=");
-    push_filter!(filter.action.map(|a| a.to_string()), "action", "action", "=");
+    push_filter!(
+        filter.category.map(|c| c.to_string()),
+        "category",
+        "category",
+        "="
+    );
+    push_filter!(
+        filter.action.map(|a| a.to_string()),
+        "action",
+        "action",
+        "="
+    );
     push_filter!(filter.working, "working", "working", "=");
     push_filter!(filter.deleted, "deleted", "deleted", "=");
 
     // Date range filters
-    push_filter!(filter.date_added_min.map(|d| d.to_string()), "date_added", "date_added_min", ">=");
-    push_filter!(filter.date_added_max.map(|d| d.to_string()), "date_added", "date_added_max", "<=");
-    push_filter!(filter.last_updated_min.map(|d| d.to_string()), "last_updated", "last_updated_min", ">=");
-    push_filter!(filter.last_updated_max.map(|d| d.to_string()), "last_updated", "last_updated_max", "<=");
-    push_filter!(filter.date_acquired_min.map(|d| d.to_string()), "date_acquired", "date_acquired_min", ">=");
-    push_filter!(filter.date_acquired_max.map(|d| d.to_string()), "date_acquired", "date_acquired_max", "<=");
+    push_filter!(
+        filter.date_added_min.map(|d| d.to_string()),
+        "date_added",
+        "date_added_min",
+        ">="
+    );
+    push_filter!(
+        filter.date_added_max.map(|d| d.to_string()),
+        "date_added",
+        "date_added_max",
+        "<="
+    );
+    push_filter!(
+        filter.last_updated_min.map(|d| d.to_string()),
+        "last_updated",
+        "last_updated_min",
+        ">="
+    );
+    push_filter!(
+        filter.last_updated_max.map(|d| d.to_string()),
+        "last_updated",
+        "last_updated_max",
+        "<="
+    );
+    push_filter!(
+        filter.date_acquired_min.map(|d| d.to_string()),
+        "date_acquired",
+        "date_acquired_min",
+        ">="
+    );
+    push_filter!(
+        filter.date_acquired_max.map(|d| d.to_string()),
+        "date_acquired",
+        "date_acquired_max",
+        "<="
+    );
 
     // Numeric range filters
     push_filter!(filter.age_years_min, "age_years", "age_years_min", ">=");
     push_filter!(filter.age_years_max, "age_years", "age_years_max", "<=");
-    push_filter!(filter.purchase_price_min, "purchase_price", "purchase_price_min", ">=");
-    push_filter!(filter.purchase_price_max, "purchase_price", "purchase_price_max", "<=");
-    push_filter!(filter.estimated_value_min, "estimated_value", "estimated_value_min", ">=");
-    push_filter!(filter.estimated_value_max, "estimated_value", "estimated_value_max", "<=");
+    push_filter!(
+        filter.purchase_price_min,
+        "purchase_price",
+        "purchase_price_min",
+        ">="
+    );
+    push_filter!(
+        filter.purchase_price_max,
+        "purchase_price",
+        "purchase_price_max",
+        "<="
+    );
+    push_filter!(
+        filter.estimated_value_min,
+        "estimated_value",
+        "estimated_value_min",
+        ">="
+    );
+    push_filter!(
+        filter.estimated_value_max,
+        "estimated_value",
+        "estimated_value_max",
+        "<="
+    );
 
     // Prepare named params: Vec<(&str, &dyn ToSql)>
     let params: Vec<(&str, &dyn ToSql)> = param_values
@@ -164,7 +232,6 @@ pub fn get_filtered_items(conn: &Connection, filter: ItemFilter) -> rusqlite::Re
     let items = rows.collect::<Result<Vec<_>, _>>()?;
     Ok(items)
 }
-
 
 pub fn add_item(conn: &Connection, item: &Item) -> AnyResult<()> {
     item.validate()
@@ -190,7 +257,7 @@ pub fn add_item(conn: &Connection, item: &Item) -> AnyResult<()> {
             deleted
         ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)",
         params![
-            item.name, 
+            item.name,
             item.description,
             item.category.to_string(),
             item.action.to_string(),
@@ -213,7 +280,6 @@ pub fn add_item(conn: &Connection, item: &Item) -> AnyResult<()> {
 }
 
 pub fn update_item(conn: &Connection, item: &Item) -> AnyResult<()> {
-
     item.validate()
         .map_err(|errs| anyhow!("Validation failed: {}", errs.join("; ")))?;
 
@@ -259,7 +325,6 @@ pub fn update_item(conn: &Connection, item: &Item) -> AnyResult<()> {
     Ok(())
 }
 
-
 pub fn soft_delete_item(conn: &Connection, item_id: i32) -> Result<()> {
     let today = chrono::Local::now().naive_local().date();
     conn.execute(
@@ -287,14 +352,16 @@ pub fn update_item_fields(
         match field {
             "name" => item.name = value,
             "description" => item.description = value,
-            "category" => item.category = ItemCategory::from_str(&value)
-                .unwrap_or(ItemCategory::Other),
-            "action" => item.action = ItemAction::from_str(&value)
-                .unwrap_or(ItemAction::Keep),
+            "category" => {
+                item.category = ItemCategory::from_str(&value).unwrap_or(ItemCategory::Other)
+            }
+            "action" => item.action = ItemAction::from_str(&value).unwrap_or(ItemAction::Keep),
             "date_added" => item.date_added = NaiveDate::parse_from_str(&value, "%Y-%m-%d")?,
             "last_updated" => item.last_updated = NaiveDate::parse_from_str(&value, "%Y-%m-%d")?,
             "age_years" => item.age_years = Some(value.parse::<u32>()?),
-            "date_acquired" => item.date_acquired = Some(NaiveDate::parse_from_str(&value, "%Y-%m-%d")?),
+            "date_acquired" => {
+                item.date_acquired = Some(NaiveDate::parse_from_str(&value, "%Y-%m-%d")?)
+            }
             "purchase_price" => item.purchase_price = Some(value.parse::<f64>()?),
             "estimated_value" => item.estimated_value = Some(value.parse::<f64>()?),
             "creator" => item.creator = Some(value),

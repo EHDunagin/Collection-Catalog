@@ -7,11 +7,11 @@ use std::path::Path;
 use std::sync::Mutex;
 
 use collection_catalog_core::{
-    add_item, export_to_csv, get_all_items, get_filtered_items, get_item_by_id, init_db,
-    soft_delete_item, update_item_fields, Item, ItemFilter,
+    Item, ItemFilter, add_item, export_to_csv, get_all_items, get_filtered_items, get_item_by_id,
+    init_db, soft_delete_item, update_item_fields,
 };
 use rusqlite::Connection;
-use tauri::{ AppHandle, State} ;
+use tauri::{AppHandle, State};
 use tauri_plugin_dialog::DialogExt;
 
 // Shared state wrapper
@@ -64,9 +64,9 @@ fn delete_item(db: State<DbState>, id: i32) -> Result<(), String> {
 
 #[tauri::command]
 async fn export_filtered_items_to_csv(
-    db: State<'_, DbState>, 
+    db: State<'_, DbState>,
     app_handle: AppHandle,
-    filter: ItemFilter
+    filter: ItemFilter,
 ) -> Result<Option<String>, String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     let items = get_filtered_items(&*conn, filter).map_err(|e| e.to_string())?;
@@ -81,8 +81,7 @@ async fn export_filtered_items_to_csv(
 
     // Convert the file path to a string and pass to export_to_csv
     if let Some(path) = save_path {
-        export_to_csv(&items, &path.to_string())
-            .map_err(|e| e.to_string())?;
+        export_to_csv(&items, &path.to_string()).map_err(|e| e.to_string())?;
         Ok(Some(path.to_string()))
     } else {
         // user cancelled

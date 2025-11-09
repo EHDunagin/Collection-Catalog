@@ -1,20 +1,12 @@
+use std::collections::HashMap;
 use std::env;
-use std::str::FromStr;
 use std::fs;
 use std::path::Path;
-use std::collections::HashMap;
+use std::str::FromStr;
 
 use collection_catalog_core::{
-    init_db,
-    add_item,
-    soft_delete_item,
-    update_item_fields,
-    Item,
-    ItemCategory, 
-    ItemAction,
-    ItemFilter,
-    get_filtered_items,
-    export_to_csv
+    Item, ItemAction, ItemCategory, ItemFilter, add_item, export_to_csv, get_filtered_items,
+    init_db, soft_delete_item, update_item_fields,
 };
 use rusqlite::Connection;
 
@@ -42,11 +34,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Connect to the database (adjust the path to your actual DB)
     let conn = Connection::open("data/catalog.db")?;
-    init_db(&conn)?; 
+    init_db(&conn)?;
 
     match args[0].as_str() {
         "list" => {
-
             let mut filter = ItemFilter::default();
 
             // Parse optional filters: field=value
@@ -64,19 +55,39 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         "working" => filter.working = value.parse::<bool>().ok(),
                         "deleted" => filter.deleted = value.parse::<bool>().ok(),
                         // Date filters
-                        "date_added_min" => filter.date_added_min = chrono::NaiveDate::from_str(value).ok(),
-                        "date_added_max" => filter.date_added_max = chrono::NaiveDate::from_str(value).ok(),
-                        "last_updated_min" => filter.last_updated_min = chrono::NaiveDate::from_str(value).ok(),
-                        "last_updated_max" => filter.last_updated_max = chrono::NaiveDate::from_str(value).ok(),
-                        "date_acquired_min" => filter.date_acquired_min = chrono::NaiveDate::from_str(value).ok(),
-                        "date_acquired_max" => filter.date_acquired_max = chrono::NaiveDate::from_str(value).ok(),
+                        "date_added_min" => {
+                            filter.date_added_min = chrono::NaiveDate::from_str(value).ok()
+                        }
+                        "date_added_max" => {
+                            filter.date_added_max = chrono::NaiveDate::from_str(value).ok()
+                        }
+                        "last_updated_min" => {
+                            filter.last_updated_min = chrono::NaiveDate::from_str(value).ok()
+                        }
+                        "last_updated_max" => {
+                            filter.last_updated_max = chrono::NaiveDate::from_str(value).ok()
+                        }
+                        "date_acquired_min" => {
+                            filter.date_acquired_min = chrono::NaiveDate::from_str(value).ok()
+                        }
+                        "date_acquired_max" => {
+                            filter.date_acquired_max = chrono::NaiveDate::from_str(value).ok()
+                        }
                         // Number filters
                         "age_years_min" => filter.age_years_min = value.parse::<u32>().ok(),
                         "age_years_max" => filter.age_years_max = value.parse::<u32>().ok(),
-                        "purchase_price_min" => filter.purchase_price_min = value.parse::<f64>().ok(),
-                        "purchase_price_max" => filter.purchase_price_max = value.parse::<f64>().ok(),
-                        "estimated_value_min" => filter.estimated_value_min = value.parse::<f64>().ok(),
-                        "estimated_value_max" => filter.estimated_value_max = value.parse::<f64>().ok(),
+                        "purchase_price_min" => {
+                            filter.purchase_price_min = value.parse::<f64>().ok()
+                        }
+                        "purchase_price_max" => {
+                            filter.purchase_price_max = value.parse::<f64>().ok()
+                        }
+                        "estimated_value_min" => {
+                            filter.estimated_value_min = value.parse::<f64>().ok()
+                        }
+                        "estimated_value_max" => {
+                            filter.estimated_value_max = value.parse::<f64>().ok()
+                        }
                         // Catchall
                         _ => eprintln!("Warning: unknown filter field'{}'", field),
                     }
@@ -113,19 +124,39 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         "working" => filter.working = value.parse::<bool>().ok(),
                         "deleted" => filter.deleted = value.parse::<bool>().ok(),
                         // Date filters
-                        "date_added_min" => filter.date_added_min = chrono::NaiveDate::from_str(value).ok(),
-                        "date_added_max" => filter.date_added_max = chrono::NaiveDate::from_str(value).ok(),
-                        "last_updated_min" => filter.last_updated_min = chrono::NaiveDate::from_str(value).ok(),
-                        "last_updated_max" => filter.last_updated_max = chrono::NaiveDate::from_str(value).ok(),
-                        "date_acquired_min" => filter.date_acquired_min = chrono::NaiveDate::from_str(value).ok(),
-                        "date_acquired_max" => filter.date_acquired_max = chrono::NaiveDate::from_str(value).ok(),
+                        "date_added_min" => {
+                            filter.date_added_min = chrono::NaiveDate::from_str(value).ok()
+                        }
+                        "date_added_max" => {
+                            filter.date_added_max = chrono::NaiveDate::from_str(value).ok()
+                        }
+                        "last_updated_min" => {
+                            filter.last_updated_min = chrono::NaiveDate::from_str(value).ok()
+                        }
+                        "last_updated_max" => {
+                            filter.last_updated_max = chrono::NaiveDate::from_str(value).ok()
+                        }
+                        "date_acquired_min" => {
+                            filter.date_acquired_min = chrono::NaiveDate::from_str(value).ok()
+                        }
+                        "date_acquired_max" => {
+                            filter.date_acquired_max = chrono::NaiveDate::from_str(value).ok()
+                        }
                         // Number filters
                         "age_years_min" => filter.age_years_min = value.parse::<u32>().ok(),
                         "age_years_max" => filter.age_years_max = value.parse::<u32>().ok(),
-                        "purchase_price_min" => filter.purchase_price_min = value.parse::<f64>().ok(),
-                        "purchase_price_max" => filter.purchase_price_max = value.parse::<f64>().ok(),
-                        "estimated_value_min" => filter.estimated_value_min = value.parse::<f64>().ok(),
-                        "estimated_value_max" => filter.estimated_value_max = value.parse::<f64>().ok(),
+                        "purchase_price_min" => {
+                            filter.purchase_price_min = value.parse::<f64>().ok()
+                        }
+                        "purchase_price_max" => {
+                            filter.purchase_price_max = value.parse::<f64>().ok()
+                        }
+                        "estimated_value_min" => {
+                            filter.estimated_value_min = value.parse::<f64>().ok()
+                        }
+                        "estimated_value_max" => {
+                            filter.estimated_value_max = value.parse::<f64>().ok()
+                        }
                         // Catchall
                         _ => eprintln!("Warning: unknown filter field'{}'", field),
                     }
@@ -141,7 +172,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 eprintln!("Error: add requires <name> <description> <category> <action>");
                 return Ok(());
             }
-            
+
             let name = args[1].to_string();
             let description = args[2].to_string();
 
@@ -199,9 +230,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             soft_delete_item(&conn, item_id)?;
             println!("Item {} marked as deleted.", item_id);
         }
-         "update" => {
+        "update" => {
             if args.len() < 3 {
-                    eprintln!("Usage: update <item_id> field=value [field=value ...]");
+                eprintln!("Usage: update <item_id> field=value [field=value ...]");
                 return Ok(());
             }
 
@@ -230,9 +261,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Ok(_) => println!("Item {item_id} updated successfully."),
                 Err(e) => eprintln!("Failed to update item {item_id}: {e}"),
             }
-
-    }  
-    "help" => {
+        }
+        "help" => {
             println!("Collection Catalog CLI");
             println!("Usage:");
             println!("  list field=value [field=value...]               - List all items");
@@ -244,23 +274,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             println!("\nFilterable fields for list/export:");
             println!("  name, description, creator, provenance (partial match)");
-            println!("  category (Exact: Book, Artwork, Collectible, Document, Electronic, Furniture, Jewelry, Other)");
+            println!(
+                "  category (Exact: Book, Artwork, Collectible, Document, Electronic, Furniture, Jewelry, Other)"
+            );
             println!("  action (Exact: Keep, Sell)");
             println!("  working (true/false)");
             println!("  deleted (true/false)");
             println!("  date_added_min, date_added_max (YYYY-MM-DD)");
             println!("  last_updated_min, last_updated_max (YYYY-MM-DD)");
             println!("  date_acquired_min, date_acquired_max (YYYY-MM-DD)");
-            println!("  age_years_min, age_years_max (integer)");       
+            println!("  age_years_min, age_years_max (integer)");
             println!("  purchase_price_min, purchase_price_max (float)");
-            println!("  estimated_value_min, estimated_value_max (float)");         
-    }   
-    _ => {
+            println!("  estimated_value_min, estimated_value_max (float)");
+        }
+        _ => {
             eprintln!("unknown command: {}", args[0]);
         }
     }
 
-
     Ok(())
-
 }

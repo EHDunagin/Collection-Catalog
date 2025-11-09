@@ -1,25 +1,30 @@
 use chrono::NaiveDate;
+use rusqlite::Row;
+use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::str::FromStr;
-use rusqlite::Row;
-use serde::{ Serialize, Deserialize };
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub enum ItemAction {
-    #[default] Keep,
+    #[default]
+    Keep,
     Sell,
 }
 
 impl fmt::Display for ItemAction {
-    fn fmt (&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", match self {
-            ItemAction::Keep => "Keep",
-            ItemAction::Sell => "Sell",
-        })
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                ItemAction::Keep => "Keep",
+                ItemAction::Sell => "Sell",
+            }
+        )
     }
 }
 
-impl FromStr for ItemAction{
+impl FromStr for ItemAction {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -33,7 +38,8 @@ impl FromStr for ItemAction{
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub enum ItemCategory {
-    #[default] Antique,
+    #[default]
+    Antique,
     Book,
     Decor,
     ElectronicDevice,
@@ -47,25 +53,25 @@ pub enum ItemCategory {
 }
 
 impl fmt::Display for ItemCategory {
-    fn fmt (&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = match self {
-           ItemCategory::Antique => "Antique",
-           ItemCategory::Book => "Book",
-           ItemCategory::Decor => "Decor",
-           ItemCategory::ElectronicDevice => "ElectronicDevice",
-           ItemCategory::Furniture => "Furniture",
-           ItemCategory::HouseholdItem => "HouseholdItem",
-           ItemCategory::Kitchenware => "Kitchenware",
-           ItemCategory::MineralSpecimen => "MineralSpecimen",
-           ItemCategory::Tool => "Tool",
-           ItemCategory::Wood => "Wood",
-           ItemCategory::Other => "Other",
+            ItemCategory::Antique => "Antique",
+            ItemCategory::Book => "Book",
+            ItemCategory::Decor => "Decor",
+            ItemCategory::ElectronicDevice => "ElectronicDevice",
+            ItemCategory::Furniture => "Furniture",
+            ItemCategory::HouseholdItem => "HouseholdItem",
+            ItemCategory::Kitchenware => "Kitchenware",
+            ItemCategory::MineralSpecimen => "MineralSpecimen",
+            ItemCategory::Tool => "Tool",
+            ItemCategory::Wood => "Wood",
+            ItemCategory::Other => "Other",
         };
         write!(f, "{}", name)
     }
 }
 
-impl FromStr for ItemCategory{
+impl FromStr for ItemCategory {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -150,16 +156,24 @@ impl Item {
             id: row.get("id")?,
             name: row.get("name")?,
             description: row.get("description")?,
-            category: ItemCategory::from_str(&row.get::<_, String>("category")?).unwrap_or(ItemCategory::Other),
-            action: ItemAction::from_str(&row.get::<_, String>("action")?).unwrap_or(ItemAction::Keep),
-            // Default dates don't matter because this should always exist 
-            date_added: NaiveDate::parse_from_str(&row.get::<_, String>("date_added")?, "%Y-%m-%d").unwrap_or(NaiveDate::from_ymd_opt(2000, 1, 1).unwrap()), 
-            last_updated: NaiveDate::parse_from_str(&row.get::<_, String>("last_updated")?, "%Y-%m-%d").unwrap_or(NaiveDate::from_ymd_opt(2000, 1, 1).unwrap()), 
+            category: ItemCategory::from_str(&row.get::<_, String>("category")?)
+                .unwrap_or(ItemCategory::Other),
+            action: ItemAction::from_str(&row.get::<_, String>("action")?)
+                .unwrap_or(ItemAction::Keep),
+            // Default dates don't matter because this should always exist
+            date_added: NaiveDate::parse_from_str(&row.get::<_, String>("date_added")?, "%Y-%m-%d")
+                .unwrap_or(NaiveDate::from_ymd_opt(2000, 1, 1).unwrap()),
+            last_updated: NaiveDate::parse_from_str(
+                &row.get::<_, String>("last_updated")?,
+                "%Y-%m-%d",
+            )
+            .unwrap_or(NaiveDate::from_ymd_opt(2000, 1, 1).unwrap()),
             deleted: row.get("deleted")?,
 
             // Optional fields
             age_years: row.get("age_years")?,
-            date_acquired: row.get::<_, Option<String>>("date_acquired")?
+            date_acquired: row
+                .get::<_, Option<String>>("date_acquired")?
                 .map(|s| NaiveDate::parse_from_str(&s, "%Y-%m-%d").unwrap()),
             purchase_price: row.get("purchase_price")?,
             estimated_value: row.get("estimated_value")?,
@@ -213,7 +227,6 @@ mod tests {
         let parsed = ItemCategory::from_str("Book").unwrap();
         assert!(matches!(parsed, ItemCategory::Book));
     }
-
 
     #[test]
     fn test_item_action_display_and_parse() {

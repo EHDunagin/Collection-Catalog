@@ -22,14 +22,13 @@ pub fn export_to_csv_string(items: &[Item]) -> Result<String, String> {
     Ok(data)
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::models::{Item, ItemCategory, ItemAction};
+    use crate::models::{Item, ItemAction, ItemCategory};
+    use chrono::NaiveDate;
     use std::fs;
     use std::path::Path;
-    use chrono::NaiveDate;
 
     fn sample_item() -> Item {
         Item {
@@ -38,7 +37,7 @@ mod tests {
             description: "desc".to_string(),
             category: ItemCategory::Book,
             date_added: NaiveDate::from_ymd_opt(2025, 1, 1).unwrap(),
-            action: ItemAction::Keep, 
+            action: ItemAction::Keep,
             // fill out all required fields...
             ..Default::default()
         }
