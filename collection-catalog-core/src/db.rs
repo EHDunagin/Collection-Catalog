@@ -106,7 +106,7 @@ pub fn get_filtered_items(conn: &Connection, filter: ItemFilter) -> rusqlite::Re
 
     // Helper macro to append filters
     macro_rules! push_filter {
-        ($opt:expr, $field:expr, $param:expr, $op:expr) => {
+        ($opt:expr_2021, $field:expr_2021, $param:expr_2021, $op:expr_2021) => {
             if let Some(val) = $opt.clone() {
                 let name = format!(":{}", $param);
                 sql.push_str(&format!(" AND {} {} {}", $field, $op, &name));
@@ -116,7 +116,7 @@ pub fn get_filtered_items(conn: &Connection, filter: ItemFilter) -> rusqlite::Re
     }
 
     macro_rules! push_like {
-        ($opt:expr, $field:expr) => {
+        ($opt:expr_2021, $field:expr_2021) => {
             if let Some(val) = $opt.clone() {
                 let name = format!(":{}", $field);
                 sql.push_str(&format!(" AND {} LIKE {}", $field, &name));
