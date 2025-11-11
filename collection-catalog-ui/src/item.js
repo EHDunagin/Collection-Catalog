@@ -114,6 +114,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Add success message to item-details
       let details = document.getElementById("item-details");
       details.innerHTML += "<p style='color: green; font-weight: bold;'>Item restored successfully.</p>";
+      document.getElementById("restore-button").style.display = "none";
     } catch (err) {
       console.error("Restore failed:", err);
       alert("Failed to restore item.");
