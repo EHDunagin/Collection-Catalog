@@ -19,190 +19,191 @@
     <main class="container">
       <nav class="sidebar">
         <h3>Navigation</h3>
-        <ul>
-          <li> <a href="filter.html?deleted=false"> View All Items </a></li>
-          <li> <a href="add-item.html"> Add New Item </a></li>
-          <li> <a href="filter.html?deleted=true"> Restore Deleted Item </a></li>
+        <ul class="nav-buttons">
+          <li> <a class="btn-nav" href="filter.html?deleted=false"> View All Items </a></li>
+          <li> <a class="btn-nav" href="add-item.html"> Add New Item </a></li>
+          <li> <a class="btn-nav" href="filter.html?deleted=true"> Restore Deleted Item </a></li>
         </ul>
       </nav>
 
-
-      <section class="filter-card">
-        <h2>Filter Items</h2>
-        <p> Use the form below to filter items in your collection. Leave fields blank to ignore those filters. </p>
-        <form id="filter-form">
-          
-          <fieldset>
-            <legend>Text Filters</legend>
+      <div class="content">
+        <section class="filter-card">
+          <h2>Filter Items</h2>
+          <p> Use the form below to filter items in your collection. Leave fields blank to ignore those filters. </p>
+          <form id="filter-form">
             
-            <label>
-              Name:
-              <input type="text" name="name_contains" id="name_contains">
-            </label><br>
+            <fieldset>
+              <legend>Text Filters</legend>
+              
+              <label>
+                Name:
+                <input type="text" name="name_contains" id="name_contains">
+              </label><br>
+
+              <br>
+
+              <label>
+                Description:
+                <input type="text" name="description_contains" id="description_contains">
+              </label><br>
+
+              <br>
+
+              <label>
+                Creator:
+                <input type="text" name="creator_contains" id="creator_contains">
+              </label><br>
+
+              <br>
+
+              <label>
+                Place of Origin:
+                <input type="text" name="provenance_contains" id="provenance_contains">
+              </label>
+            </fieldset>
 
             <br>
 
-            <label>
-              Description:
-              <input type="text" name="description_contains" id="description_contains">
-            </label><br>
+            <fieldset>
+              <legend>Enum / Boolean Filters</legend>
+
+              <label>
+                Category:
+                <select name="category" id="category">
+                  <option value="">-Any-</option>
+                  <option value="Antique">Antique</option>
+                  <option value="Book">Book</option>
+                  <option value="Decor">Decor</option>
+                  <option value="ElectronicDevice">Electronic Device</option>
+                  <option value="Furniture">Furniture</option>
+                  <option value="HouseholdItem">Household Item</option>
+                  <option value="Kitchenware">Kitchenware</option>
+                  <option value="MineralSpecimen">Mineral Specimen</option>
+                  <option value="Tool">Tool</option>
+                  <option value="Wood">Wood</option>
+                  <option value="Other">Other</option>
+                </select>
+              </label><br>
+
+              <br>
+
+              <label>
+                Action:
+                <select name="action" id="action">
+                  <option value="">-- Any --</option>
+                  <option value="Sell">Sell</option>
+                  <option value="Keep">Keep</option>
+                </select>
+              </label><br>
+              
+              <br>
+
+              <label>
+                Working:
+                <select name="working" id="working">
+                  <option value="">-- Any --</option>
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+              </label><br>
+
+              <input type="hidden" name="deleted" value="false">
+            </fieldset>
+
+            <fieldset>
+              <legend>Date Filters</legend>
+
+              <label>
+                Date Added (Min):
+                <input type="date" name="date_added_min" id="date_added_min">
+              </label><br>
+
+              <br>
+
+              <label>
+                Date Added (Max):
+                <input type="date" name="date_added_max" id="date_added_max">
+              </label><br>
+
+              <br>
+
+              <label>
+                Last Updated (Min):
+                <input type="date" name="last_updated_min" id="last_updated_min">
+              </label><br>
+
+              <br>
+
+              <label>
+                Last Updated (Max):
+                <input type="date" name="last_updated_max" id="last_updated_max">
+              </label><br>
+
+              <br>
+
+              <label>
+                Date Acquired (Min):
+                <input type="date" name="date_acquired_min" id="date_acquired_min">
+              </label><br>
+
+              <br>
+
+              <label>
+                Date Acquired (Max):
+                <input type="date" name="date_acquired_max" id="date_acquired_max">
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Numeric Filters</legend>
+
+              <label>
+                Age (Min Years):
+                <input type="number" name="age_years_min" id="age_years_min" min="0">
+              </label><br>
+
+              <br>
+
+              <label>
+                Age (Max Years):
+                <input type="number" name="age_years_max" id="age_years_max" min="0">
+              </label><br>
+
+              <br>
+
+              <label>
+                Purchase Price (Min):
+                <input type="number" name="purchase_price_min" id="purchase_price_min" step="0.01" min="0">
+              </label><br>
+
+              <br>
+
+              <label>
+                Purchase Price (Max):
+                <input type="number" name="purchase_price_max" id="purchase_price_max" step="0.01" min="0">
+              </label><br>
+
+              <br>
+
+              <label>
+                Estimated Value (Min):
+                <input type="number" name="estimated_value_min" id="estimated_value_min" step="0.01" min="0">
+              </label><br>
+
+              <br>
+
+              <label>
+                Estimated Value (Max):
+                <input type="number" name="estimated_value_max" id="estimated_value_max" step="0.01" min="0">
+              </label>
+            </fieldset>
 
             <br>
 
-            <label>
-              Creator:
-              <input type="text" name="creator_contains" id="creator_contains">
-            </label><br>
-
-            <br>
-
-            <label>
-              Place of Origin:
-              <input type="text" name="provenance_contains" id="provenance_contains">
-            </label>
-          </fieldset>
-
-          <br>
-
-          <fieldset>
-            <legend>Enum / Boolean Filters</legend>
-
-            <label>
-              Category:
-              <select name="category" id="category">
-                <option value="">-Any-</option>
-                <option value="Antique">Antique</option>
-                <option value="Book">Book</option>
-                <option value="Decor">Decor</option>
-                <option value="ElectronicDevice">Electronic Device</option>
-                <option value="Furniture">Furniture</option>
-                <option value="HouseholdItem">Household Item</option>
-                <option value="Kitchenware">Kitchenware</option>
-                <option value="MineralSpecimen">Mineral Specimen</option>
-                <option value="Tool">Tool</option>
-                <option value="Wood">Wood</option>
-                <option value="Other">Other</option>
-              </select>
-            </label><br>
-
-            <br>
-
-            <label>
-              Action:
-              <select name="action" id="action">
-                <option value="">-- Any --</option>
-                <option value="Sell">Sell</option>
-                <option value="Keep">Keep</option>
-              </select>
-            </label><br>
-            
-            <br>
-
-            <label>
-              Working:
-              <select name="working" id="working">
-                <option value="">-- Any --</option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </select>
-            </label><br>
-
-            <input type="hidden" name="deleted" value="false">
-          </fieldset>
-
-          <fieldset>
-            <legend>Date Filters</legend>
-
-            <label>
-              Date Added (Min):
-              <input type="date" name="date_added_min" id="date_added_min">
-            </label><br>
-
-            <br>
-
-            <label>
-              Date Added (Max):
-              <input type="date" name="date_added_max" id="date_added_max">
-            </label><br>
-
-            <br>
-
-            <label>
-              Last Updated (Min):
-              <input type="date" name="last_updated_min" id="last_updated_min">
-            </label><br>
-
-            <br>
-
-            <label>
-              Last Updated (Max):
-              <input type="date" name="last_updated_max" id="last_updated_max">
-            </label><br>
-
-            <br>
-
-            <label>
-              Date Acquired (Min):
-              <input type="date" name="date_acquired_min" id="date_acquired_min">
-            </label><br>
-
-            <br>
-
-            <label>
-              Date Acquired (Max):
-              <input type="date" name="date_acquired_max" id="date_acquired_max">
-            </label>
-          </fieldset>
-
-          <fieldset>
-            <legend>Numeric Filters</legend>
-
-            <label>
-              Age (Min Years):
-              <input type="number" name="age_years_min" id="age_years_min" min="0">
-            </label><br>
-
-            <br>
-
-            <label>
-              Age (Max Years):
-              <input type="number" name="age_years_max" id="age_years_max" min="0">
-            </label><br>
-
-            <br>
-
-            <label>
-              Purchase Price (Min):
-              <input type="number" name="purchase_price_min" id="purchase_price_min" step="0.01" min="0">
-            </label><br>
-
-            <br>
-
-            <label>
-              Purchase Price (Max):
-              <input type="number" name="purchase_price_max" id="purchase_price_max" step="0.01" min="0">
-            </label><br>
-
-            <br>
-
-            <label>
-              Estimated Value (Min):
-              <input type="number" name="estimated_value_min" id="estimated_value_min" step="0.01" min="0">
-            </label><br>
-
-            <br>
-
-            <label>
-              Estimated Value (Max):
-              <input type="number" name="estimated_value_max" id="estimated_value_max" step="0.01" min="0">
-            </label>
-          </fieldset>
-
-          <br>
-
-          <button type="submit" id="filter-items">Search</button>
-        </form>
-      </section>
+            <button type="submit" id="filter-items">Search</button>
+          </form>
+        </section>
+      </div>
 
 
     </main>
