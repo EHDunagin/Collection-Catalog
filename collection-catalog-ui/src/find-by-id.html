@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find Item by ID</title>
+    <script src="./node_modules/@tauri-apps/api/tauri.js"></script>
+  </head>
+
+  <body>
+    
+    <header class="app-header">
+      <h1>Collection Catalog</h1>
+    </header>
+
+    <main class="container">
+      <nav class="sidebar">
+        <h3>Navigation</h3>
+        <ul class="nav-buttons">
+          <li><a href="index.html" class="btn-nav">Back to Home</a></li>
+          <li><a href="filter.html?deleted=false" class="btn-nav">View All Items</a></li>
+          <li><a href="find-by-id.html" class="btn-nav">Find Item by ID</a></li>
+          <li><a href="add-item.html" class="btn-nav">Add New Item</a></li>
+          <li><a href="filter.html?deleted=true" class="btn-nav">Restore Deleted Item</a></li>
+        </ul>
+      </nav>
+
+      <section class="filter-card">
+        <h2>Find Item by ID</h2>
+        <p>Enter the item ID below to jump directly to its detail page.</p>
+
+        <form id="find-id-form">
+          <label for="item-id">Item ID:</label>
+          <input type="number" id="item-id" name="item-id" min="1" required />
+
+          <button type="submit">Go to Item</button>
+        </form>
+      </section>
+
+    </main>
+
+    <script>
+      document.getElementById("find-id-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const id = document.getElementById("item-id").value.trim();
+        if (id) {
+          window.location.href = `item.html?id=${id}`;
+        }
+      });
+    </script>
+
+  </body>
+</html>

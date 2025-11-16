@@ -91,7 +91,7 @@ header {
 
 /* ====== FILTER CARD CONTAINER ====== */
 .filter-card {
-  max-width: 700px;
+  max-width: 750px;
   flex: 1;
   overflow-y: auto;
   height: 100%;
@@ -181,6 +181,7 @@ header {
   /* Nav buttons display inline */
   .nav-buttons {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
     gap: 0.5rem;
@@ -230,7 +231,6 @@ header {
 
 /* ====== FILTER FORM STYLING ====== */
 #filter-form {
-  max-width: 700px; /* Prevent the form from stretching too wide */
   margin: 0 auto; /* Center horizontally */
   padding: 1.5rem;
   background-color: #ffffff;
