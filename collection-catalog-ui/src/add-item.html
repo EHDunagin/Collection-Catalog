@@ -1,108 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Add Item</title>
-</head>
-<body>
-  <h1>Add a New Item</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Item</title>
+    <script src="./node_modules/@tauri-apps/api/tauri.js"></script>
+  </head>
 
-  <div id="item-details">
+  <body>
 
-    <form id="addItemForm">
-      <!-- Required fields -->
-      <label>
-        Name:
-        <input type="text" id="name" required maxlength="50" />
-      </label>
-      <br/>
+    <header>
+      <h1>Collection Catalog</h1>
+    </header>
 
-      <label>
-        Description:
-        <textarea id="description" required></textarea>
-      </label>
-      <br/>
+      <main class="container">
+        <nav class="sidebar">
+          <h3>Navigation</h3>
+          <ul class="nav-buttons">
+            <li><a href="index.html" class="btn-nav">Back to Home</a></li>
+            <li> <a class="btn-nav" href="filter.html?deleted=false"> View All Items </a></li>
+            <li> <a class="btn-nav" href="find-by-id.html">Find Item by ID</a></li>
+            <li> <a class="btn-nav" href="add-item.html"> Add New Item </a></li>
+            <li> <a class="btn-nav" href="filter.html?deleted=true"> Restore Deleted Item </a></li>
+          </ul>
+        </nav>
 
-      <label>
-        Category:
-        <select id="category">
-          <option value="Antique">Antique</option>
-          <option value="Book">Book</option>
-          <option value="Decor">Decor</option>
-          <option value="ElectronicDevice">Electronic Device</option>
-          <option value="Furniture">Furniture</option>
-          <option value="HouseholdItem">Household Item</option>
-          <option value="Kitchenware">Kitchenware</option>
-          <option value="MineralSpecimen">Mineral Specimen</option>
-          <option value="Tool">Tool</option>
-          <option value="Wood">Wood</option>
-          <option value="Other">Other</option>
-        </select>
-      </label>
-      <br/>
+        <div class="content">
+          <section class="list-view">
 
-      <label>
-        Action:
-        <select id="action">
-          <option value="Keep">Keep</option>
-          <option value="Sell">Sell</option>
-        </select>
-      </label>
-      <br/>
+            <h2>Add a New Item</h2>
 
-      <!-- Optional fields -->
-      <label>
-        Age (years):
-        <input type="number" id="age_years" min="0" />
-      </label>
-      <br/>
+            <div id="item-details">
 
-      <label>
-        Date Acquired:
-        <input type="date" id="date_acquired" />
-      </label>
-      <br/>
+              <form id="addItemForm">
+                <!-- Required fields -->
+                <label>
+                  Name:
+                  <input type="text" id="name" required maxlength="50" />
+                </label>
+                <br/>
 
-      <label>
-        Purchase Price:
-        <input type="number" id="purchase_price" min="0" step="0.01" />
-      </label>
-      <br/>
+                <label>
+                  Description:
+                  <textarea id="description" required></textarea>
+                </label>
+                <br/>
 
-      <label>
-        Estimated Value:
-        <input type="number" id="estimated_value" min="0" step="0.01" />
-      </label>
-      <br/>
+                <label>
+                  Category:
+                  <select id="category">
+                    <option value="Antique">Antique</option>
+                    <option value="Book">Book</option>
+                    <option value="Decor">Decor</option>
+                    <option value="ElectronicDevice">Electronic Device</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="HouseholdItem">Household Item</option>
+                    <option value="Kitchenware">Kitchenware</option>
+                    <option value="MineralSpecimen">Mineral Specimen</option>
+                    <option value="Tool">Tool</option>
+                    <option value="Wood">Wood</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </label>
+                <br/>
 
-      <label>
-        Creator:
-        <input type="text" id="creator" />
-      </label>
-      <br/>
+                <label>
+                  Action:
+                  <select id="action">
+                    <option value="Keep">Keep</option>
+                    <option value="Sell">Sell</option>
+                  </select>
+                </label>
+                <br/>
 
-      <label>
-        In Working Condition:
-        <select id="working">
-          <option value="">Not Applicable</option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      </label>
-      <br/>
+                <!-- Optional fields -->
+                <label>
+                  Age (years):
+                  <input type="number" id="age_years" min="0" />
+                </label>
+                <br/>
 
-      <label>
-        Place of Origin:
-        <textarea id="provenance"></textarea>
-      </label>
-      <br/>
+                <label>
+                  Date Acquired:
+                  <input type="date" id="date_acquired" />
+                </label>
+                <br/>
 
-      <button type="submit">Add Item</button>
-    </form>
-  </div>
+                <label>
+                  Purchase Price:
+                  <input type="number" id="purchase_price" min="0" step="0.01" />
+                </label>
+                <br/>
 
-  <p><a href="index.html">Back to Home</a></p>
+                <label>
+                  Estimated Value:
+                  <input type="number" id="estimated_value" min="0" step="0.01" />
+                </label>
+                <br/>
 
-  <script type="module" src="add-item.js"></script>
-</body>
+                <label>
+                  Creator:
+                  <input type="text" id="creator" />
+                </label>
+                <br/>
+
+                <label>
+                  In Working Condition:
+                  <select id="working">
+                    <option value="">Not Applicable</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </label>
+                <br/>
+
+                <label>
+                  Place of Origin:
+                  <textarea id="provenance"></textarea>
+                </label>
+                <br/>
+
+                <button type="submit">Add Item</button>
+              </form>
+            </div>
+
+            <p><a href="index.html">Back to Home</a></p>
+
+          </section>
+        </div>
+      </main>
+
+
+    <script type="module" src="add-item.js"></script>
+  </body>
 </html>

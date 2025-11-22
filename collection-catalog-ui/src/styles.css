@@ -11,6 +11,21 @@ header {
   z-index: 100;
 }
 
+/* ====== TABLE STYLING ====== */
+table {
+  margin-bottom: 20px;
+  border-collapse: collapse;
+  
+}
+
+th, td {
+  padding: 10px; /* Applies 15px padding on all sides */
+}
+
+th {
+  background-color: #cccccc;
+}
+
 /* ====== MAIN LAYOUT ====== */
 .container {
   display: flex;
@@ -88,6 +103,12 @@ header {
   transform: translateY(0);
 }
 
+/* ====== LIST VIEW ====== */
+.list-view {
+  padding: 1rem;
+  overflow-y: auto;
+  height: 100%;
+}
 
 /* ====== FILTER CARD CONTAINER ====== */
 .filter-card {
