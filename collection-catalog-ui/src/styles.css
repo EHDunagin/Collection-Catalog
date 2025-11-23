@@ -339,3 +339,95 @@ th {
     text-align: left;
   }
 }
+
+
+
+/* ====== ADD ITEM FORM STYLING ====== */
+#addItemForm {
+  margin: 0 auto; /* Center horizontally */
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Fieldsets visually separated */
+#addItemForm fieldset {
+  border: 1px solid #cce0ff;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Labels and inputs arranged in a clean grid */
+#addItemForm label {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* left: label, right: input */
+  align-items: center;
+  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+/* Inputs right-aligned in their cell */
+#addItemForm input[type="text"],
+#addItemForm input[type="date"],
+#addItemForm input[type="number"],
+#addItemForm select {
+  width: 100%;
+  text-align: right;
+  padding: 0.4em 0.6em;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fafafa;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+#addItemForm input:focus,
+#addItemForm select:focus {
+  border-color: #396cd8;
+  outline: none;
+}
+
+/* Legend styling */
+#addItemForm legend {
+  font-weight: 600;
+  color: #003366;
+  padding: 0 0.4em;
+}
+
+/* Submit button centered below form */
+#addItemForm button[type="submit"] {
+  display: block;
+  margin: 1rem auto 0 auto;
+  padding: 0.6em 1.2em;
+  background-color: #396cd8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+#addItemForm button[type="submit"]:hover {
+  background-color: #2f55b3;
+}
+
+/* ====== RESPONSIVE ADD ITEM FORM ====== */
+@media (max-width: 600px) {
+  #addItemForm {
+    padding: 1rem;
+  }
+
+  #addItemForm label {
+    grid-template-columns: 1fr; /* stack vertically on small screens */
+    text-align: left;
+  }
+
+  #addItemForm input,
+  #addItemForm select {
+    text-align: left;
+  }
+}
