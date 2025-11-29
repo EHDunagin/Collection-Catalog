@@ -2,8 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::collections::HashMap;
-use std::fs;
-use std::path::Path;
 use std::sync::Mutex;
 
 use collection_catalog_core::{
@@ -11,7 +9,7 @@ use collection_catalog_core::{
     init_db, soft_delete_item, update_item_fields,
 };
 use rusqlite::Connection;
-use tauri::{AppHandle, State};
+use tauri::{AppHandle, State, Manager};
 use tauri_plugin_dialog::DialogExt;
 
 // Shared state wrapper
@@ -90,20 +88,31 @@ async fn export_filtered_items_to_csv(
 }
 
 fn main() {
-    // Ensure data dir exists
-    let data_dir = Path::new("../../data");
-    if !data_dir.exists() {
-        fs::create_dir_all(data_dir)
-            .expect("Failed to create database and no existing database found");
-    }
-
-    // Initialize DB connection
-    let conn = Connection::open("../../data/catalog.db").expect("failed to open db");
-    init_db(&conn).expect("failed to init db");
-
+    
     tauri::Builder::default()
+        .setup(|app| {
+            // Use Tauri's app-specific data directory
+            let app_data_dir = app.path().app_data_dir().expect("Failed to get app data dir");
+            let data_dir = app_data_dir.join("data");
+
+            // Create the data directory if needed
+            if !data_dir.exists() {
+                std::fs::create_dir_all(&data_dir)
+                    .expect("Failed to create data directory");
+            }
+
+            let db_path = data_dir.join("catalog.db");
+            println!("*** USING DATABASE PATH *** {}", db_path.to_string_lossy());
+
+            let conn = Connection::open(&db_path).expect("failed to open db");
+            init_db(&conn).expect("failed to init db");
+
+            // Make DB connection available to commands
+            app.manage(DbState(std::sync::Mutex::new(conn)));
+
+            Ok(())
+        })
         .plugin(tauri_plugin_dialog::init())
-        .manage(DbState(Mutex::new(conn))) // add DB to app state
         .invoke_handler(tauri::generate_handler![
             list_items,
             new_item,
@@ -115,4 +124,5 @@ fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+
 }
