@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Show update form and hide current item details, update button and delete button
     document.getElementById("update-form-container").style.display = "block";
     document.getElementById("item-details").style.display = "none";
+    document.getElementById("item-detail-header").style.display = "none";
     document.getElementById("update-button").style.display = "none";
     document.getElementById("delete-button").style.display = "none";
   });
@@ -39,6 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("cancel-update").addEventListener("click", () => {
     document.getElementById("update-form-container").style.display = "none";
     document.getElementById("item-details").style.display = "block";
+    document.getElementById("item-detail-header").style.display = "block";
     document.getElementById("update-button").style.display = "inline";
     document.getElementById("delete-button").style.display = "inline";
   });
@@ -91,6 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Hide the form, show the details and buttons again
       document.getElementById("update-form-container").style.display = "none";
       document.getElementById("item-details").style.display = "block";
+      document.getElementById("item-detail-header").style.display = "block";
       document.getElementById("update-button").style.display = "inline";
       document.getElementById("delete-button").style.display = "inline";
 

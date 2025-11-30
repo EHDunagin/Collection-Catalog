@@ -431,3 +431,115 @@ th {
     text-align: left;
   }
 }
+
+
+/* ====== UPDATE ITEM FORM STYLING ====== */
+#update-form {
+  margin: 0 auto; /* Center horizontally */
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Fieldsets visually separated */
+#update-form fieldset {
+  border: 1px solid #cce0ff;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Labels and inputs arranged in a clean grid */
+#update-form label {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* left: label, right: input */
+  align-items: center;
+  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+/* Inputs right-aligned in their cell */
+#update-form input[type="text"],
+#update-form input[type="date"],
+#update-form input[type="number"],
+#update-form select {
+  width: 100%;
+  text-align: right;
+  padding: 0.4em 0.6em;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fafafa;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+#update-form input:focus,
+#update-form select:focus {
+  border-color: #396cd8;
+  outline: none;
+}
+
+/* Legend styling */
+#update-form legend {
+  font-weight: 600;
+  color: #003366;
+  padding: 0 0.4em;
+}
+
+/* Buttons */
+#update-form .button-row {
+  display: flex;
+  justify-content: left; /* center the whole row */
+  gap: 3rem;               /* horizontal space between buttons */
+  margin-top: 1rem;
+}
+
+#update-form button[type="submit"],
+#update-form button[type="button"] {
+  margin: 0; /* remove auto margins so flexbox can manage spacing */
+  padding: 0.6em 1.2em;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Submit button styles */
+#update-form button[type="submit"] {
+  background-color: #396cd8;
+  color: white;
+  border: none;
+}
+#update-form button[type="submit"]:hover {
+  background-color: #2f55b3;
+}
+
+/* Cancel button styles */
+#update-form button[type="button"] {
+  background-color: #cccccc;
+  color: black;
+  border: none;
+}
+#update-form button[type="button"]:hover {
+  background-color: #999999;
+}
+
+
+/* ====== RESPONSIVE UPDATE ITEM FORM ====== */
+@media (max-width: 600px) {
+  #update-form {
+    padding: 1rem;
+  }
+
+  #update-form label {
+    grid-template-columns: 1fr; /* stack vertically on small screens */
+    text-align: left;
+  }
+
+  #update-form input,
+  #update-form select {
+    text-align: left;
+  }
+}
