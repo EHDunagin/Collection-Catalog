@@ -1,6 +1,27 @@
 const { invoke } = window.__TAURI__.core;
 
 let currentFilter = {}; // Defined globally so export-csv can use after created on DOMContentLoaded
+
+// Convert DB enum-like categories to a nicer display format
+const CATEGORY_MAP = {
+  Antique: "Antique",
+  Book: "Book",
+  Decor: "Decor",
+  ElectronicDevice: "Electronic Device",
+  Furniture: "Furniture",
+  HouseholdItem: "Household Item",
+  Kitchenware: "Kitchenware",
+  MineralSpecimen: "Mineral Specimen",
+  Tool: "Tool",
+  Wood: "Wood",
+  Other: "Other"
+};
+
+function prettyCategory(code) {
+  return CATEGORY_MAP[code] || code || "";
+}
+
+
 const exportBtn = document.getElementById("export-csv");
 exportBtn.disabled = true; // disable until results are loaded
 
@@ -60,10 +81,16 @@ document.addEventListener("DOMContentLoaded", async () => {
           <td><a href="item.html?id=${item.id}">${item.id}</a></td>
           <td>${item.name}</td>
           <td>${item.description || ""}</td>
-          <td>${item.category || ""}</td>
+          <td>${prettyCategory(item.category)}</td>
           <td>${item.creator || ""}</td>
           <td>${item.working === null ? "Unknown" : item.working ? "Yes" : "No"}</td>
           <td>${item.action || ""}</td>
+          <td>${item.age_years ?? ""}</td>
+          <td>${item.date_acquired || ""}</td>
+          <td>${item.purchase_price ?? ""}</td>
+          <td>${item.estimated_value ?? ""}</td>
+          <td>${item.provenance || ""}</td>
+          <td>${item.date_added}</td>
           <td>${item.last_updated}</td>
         `;
         tbody.appendChild(tr);

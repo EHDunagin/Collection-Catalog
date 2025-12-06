@@ -132,22 +132,23 @@ function renderItem(item) {
   const container = document.getElementById("item-details");
   container.innerHTML = `
     <table border="1">
-      <tr><th>ID</th><td>${item.id}</td></tr>
-      <tr><th>Name</th><td>${item.name}</td></tr>
-      <tr><th>Description</th><td>${item.description || ""}</td></tr>
-      <tr><th>Category</th><td>${item.category || ""}</td></tr>
-      <tr><th>Action</th><td>${item.action || ""}</td></tr>
-      <tr><th>Creator</th><td>${item.creator || ""}</td></tr>
-      <tr><th>Place of Origin</th><td>${item.provenance || ""}</td></tr>
-      <tr><th>Age (Years)</th><td>${item.age_years ?? ""}</td></tr>
-      <tr><th>Date Acquired</th><td>${item.date_acquired || ""}</td></tr>
-      <tr><th>Purchase Price</th><td>${item.purchase_price ?? ""}</td></tr>
-      <tr><th>Estimated Value</th><td>${item.estimated_value ?? ""}</td></tr>
-      <tr><th>Working Condition</th><td>${
+      <tr><th>Field</th><th>Value</th></tr>
+      <tr><td>ID</td><td>${item.id}</td></tr>
+      <tr><td>Name</td><td>${item.name}</td></tr>
+      <tr><td>Description</td><td>${item.description || ""}</td></tr>
+      <tr><td>Category</td><td>${item.category || ""}</td></tr>
+      <tr><td>Action</td><td>${item.action || ""}</td></tr>
+      <tr><td>Creator</td><td>${item.creator || ""}</td></tr>
+      <tr><td>Place of Origin</td><td>${item.provenance || ""}</td></tr>
+      <tr><td>Age (Years)</td><td>${item.age_years ?? ""}</td></tr>
+      <tr><td>Date Acquired</td><td>${item.date_acquired || ""}</td></tr>
+      <tr><td>Purchase Price</td><td>${item.purchase_price ?? ""}</td></tr>
+      <tr><td>Estimated Value</td><td>${item.estimated_value ?? ""}</td></tr>
+      <tr><td>Working Condition</td><td>${
         item.working === null ? "Unknown" : item.working ? "Yes" : "No"
       }</td></tr>
-      <tr><th>Date Added</th><td>${item.date_added}</td></tr>
-      <tr><th>Last Updated</th><td>${item.last_updated}</td></tr>
+      <tr><td>Date Added</td></th><td>${item.date_added}</td></tr>
+      <tr><td>Last Updated</td></th><td>${item.last_updated}</td></tr>
     </table>
   `;
   
