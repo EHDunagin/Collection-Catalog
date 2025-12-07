@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (!item) {
       document.getElementById("item-details").innerText = "Item not found.";
+      document.getElementById("update-button").style.display = "none";
+      document.getElementById("delete-button").style.display = "none";
       return;
     }
 
